@@ -1,0 +1,22 @@
+#!/bin/bash -l
+### Ming Ge / Claude, Oct 2026
+### Extract CA-box daily precip (TP) + snowfall (SF) (Jan-Apr) for one year per array index
+
+#PBS -N get_precip_sf_ca
+#PBS -A P66770001
+#PBS -l select=1:ncpus=2
+#PBS -l walltime=00:30:00
+#PBS -q casper
+#PBS -J 1990-2025
+#PBS -j oe
+#PBS -o /glade/derecho/scratch/mingge/logs/get_precip_sf_ca_^array_index^.log
+
+export TMPDIR=/glade/derecho/scratch/$USER/temp
+mkdir -p $TMPDIR
+mkdir -p /glade/derecho/scratch/mingge/logs
+
+source /glade/u/home/mingge/miniforge3/etc/profile.d/conda.sh
+conda activate claude_test
+
+exe=/glade/u/home/mingge/ERA5/AR_CA_PROJ/get_precip_sf_ca.py
+python $exe $PBS_ARRAY_INDEX

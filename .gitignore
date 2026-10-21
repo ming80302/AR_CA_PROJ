@@ -1,0 +1,16 @@
+# Jupyter autosave copies
+.ipynb_checkpoints/
+
+# Editor swap/backup files
+*.swp
+*.swo
+*.swn
+*~
+
+# Python
+__pycache__/
+*.pyc
+
+# Data outputs -- these live on /glade/campaign, not in this repo
+*.nc
+*.csv
