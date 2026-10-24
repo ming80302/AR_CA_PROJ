@@ -3,7 +3,7 @@
 #
 # Extract daily-total precipitation (TP = large-scale + convective, in mm) and
 # daily-total snowfall water-equivalent (SF, in mm) over the California
-# bounding box, for January-April of a single year, from the ERA5 accumulated
+# bounding box, for January-May of a single year, from the ERA5 accumulated
 # surface-forecast archive.
 #
 # ERA5 forecast-accumulated fields reset every 12 hours (inits at 06Z/18Z,
@@ -34,7 +34,8 @@ dir_o = '/glade/campaign/mmm/c3we/mingge/ERA5/CA_blocking/'
 LAT_S, LAT_N = 32.0, 42.5
 LON_W, LON_E = 235.0, 246.0   # -125.0 to -114.0 deg E
 
-MONTHS = [1, 2, 3, 4]  # January - April
+MONTHS = [1, 2, 3, 4, 5]  # January - May
+MONTH_NAMES = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May'}
 
 
 def load_fhr12(year, month, varcode, varname):
@@ -59,7 +60,7 @@ def load_fhr12(year, month, varcode, varname):
 
 def daily_total(year, varcode, varname, out_name):
     """Sum the 06Z and 18Z 12-hour accumulations for each calendar day,
-    across all of Jan-Apr for one year. Returns an (time, lat, lon) DataArray
+    across all of Jan-May for one year. Returns an (time, lat, lon) DataArray
     in mm, one value per complete calendar day."""
     month_das = [load_fhr12(year, m, varcode, varname) for m in MONTHS]
     month_das = [d for d in month_das if d is not None]
@@ -109,7 +110,7 @@ def main():
     ds_out = xr.merge([tp, sf])
     ds_out.attrs['script'] = 'get_precip_sf_ca.py'
     ds_out.attrs['box'] = f'lat {LAT_S}-{LAT_N}, lon {LON_W}-{LON_E} (California)'
-    ds_out.attrs['months'] = 'Jan-Apr'
+    ds_out.attrs['months'] = '-'.join([MONTH_NAMES[MONTHS[0]], MONTH_NAMES[MONTHS[-1]]])
     ds_out.attrs['day_convention'] = '06Z to 06Z(next day), sum of two 12-hour ERA5 forecast accumulations'
 
     print(flnm_o)
