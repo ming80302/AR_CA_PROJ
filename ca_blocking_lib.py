@@ -291,7 +291,9 @@ def find_events(dates, sanom, threshold, min_duration, sign=1, max_gap=1):
                 'second_peak_sanom': sorted_vals[-2] if sorted_vals.size > 1 else sorted_vals[-1],
                 'mean_sanom': seg_sanom.mean(),
             })
-    return pd.DataFrame(records)
+    columns = ['start_date', 'end_date', 'duration_days', 'n_gap_days', 'peak_sanom',
+               'second_peak_sanom', 'mean_sanom']
+    return pd.DataFrame(records, columns=columns)
 
 
 def extremal_index_runs(dates, exceed_bool, max_gaps=(0, 1, 2, 3)):
@@ -485,6 +487,16 @@ def _self_test():
 
     # second_peak_sanom should never exceed peak_sanom
     assert (ev['second_peak_sanom'] <= ev['peak_sanom']).all()
+
+    # a threshold with zero qualifying events must still return the full expected
+    # column set (not an empty, column-less DataFrame) -- callers that immediately
+    # do ev.drop(columns='second_peak_sanom') or similar on each per-threshold
+    # result, before concatenating, would otherwise KeyError on an empty threshold
+    ev_none = find_events(dates[:n], sig, threshold=100, min_duration=1, sign=1, max_gap=1)
+    assert len(ev_none) == 0
+    assert list(ev_none.columns) == ['start_date', 'end_date', 'duration_days', 'n_gap_days',
+                                      'peak_sanom', 'second_peak_sanom', 'mean_sanom']
+    ev_none.drop(columns='second_peak_sanom')  # must not raise
 
     # extremal_index_runs: theta should be in (0, 1] and monotonically non-increasing
     # as max_gap grows (more merging -> fewer, not more, clusters)
