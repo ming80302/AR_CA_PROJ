@@ -16,21 +16,36 @@ from scipy.stats import linregress, theilslopes
 # Climatology
 # ---------------------------------------------------------------------------
 
-def climatology_dict(time_index, vals, window=5, compute_std=True):
+def climatology_dict(time_index, vals, window=5, compute_std=True, min_samples=1,
+                      dropna=False, check_wraparound=True):
     """Per-calendar-day mean (and optionally std), pooling +/-window days across all
     years, keyed by (month, day). Works on any 1-D series passed in -- a series of
     daily values or a series of 5-day running means, whichever `vals` holds.
 
     Pools by sorted-(month, day) index proximity, so it does NOT handle a Dec->Jan
-    wraparound -- it assumes `time_index` never spans both December and January.
+    wraparound correctly -- near Jan 1 / Dec 31 the pooling window silently becomes
+    asymmetric (e.g. Jan 1's window only reaches forward into January, not back into
+    the preceding December) rather than raising or fixing itself. `check_wraparound`
+    raises instead of silently producing that asymmetric window; set it False only if
+    the caller already knows about and accepts that imprecision for a season that
+    must span the new year (e.g. an Oct-May water year), rather than as a way to paper
+    over the issue for data that could just as easily be restricted to a safe range.
+
+    dropna=True drops NaNs from each pooled window before computing (and, combined
+    with min_samples, returns NaN for a calendar day with too few valid pooled values)
+    -- for a 1-D series with real missing-data gaps (e.g. a station sensor offline, or
+    values already masked out upstream), as opposed to the dense, gap-free series this
+    function was first written for, where the defaults (dropna=False, min_samples=1)
+    are always correct and unaffected by this option.
     """
     time_index = pd.DatetimeIndex(time_index)
     months = set(time_index.month)
-    if 12 in months and 1 in months:
+    if check_wraparound and 12 in months and 1 in months:
         raise ValueError(
             'climatology_dict pools by sorted (month, day) index proximity and does '
             'not handle a Dec->Jan wraparound, but time_index spans both December '
-            'and January. Restrict the input to a non-wrapping season first.'
+            'and January. Restrict the input to a non-wrapping season first, or pass '
+            'check_wraparound=False to accept the resulting asymmetric pooling window.'
         )
 
     md_key = list(zip(time_index.month, time_index.day))
@@ -40,9 +55,17 @@ def climatology_dict(time_index, vals, window=5, compute_std=True):
     clim_mean, clim_std = {}, {}
     for k, idx in key_to_idx.items():
         mask = (season_idx >= idx - window) & (season_idx <= idx + window)
-        clim_mean[k] = vals[mask].mean(axis=0)
+        pool = vals[mask]
+        if dropna:
+            pool = pool[~np.isnan(pool)]
+            if len(pool) < min_samples or (compute_std and pool.std() == 0):
+                clim_mean[k] = np.nan
+                if compute_std:
+                    clim_std[k] = np.nan
+                continue
+        clim_mean[k] = pool.mean(axis=0)
         if compute_std:
-            clim_std[k] = vals[mask].std(axis=0)
+            clim_std[k] = pool.std(axis=0)
     return (clim_mean, clim_std) if compute_std else clim_mean
 
 
@@ -315,9 +338,64 @@ def match_rate(left, right, label_left, label_right):
     return pd.DataFrame(rows)
 
 
+def event_days(events_df):
+    """Expand an events dataframe's start_date/end_date rows into the set of all
+    individual calendar days (pandas Timestamps) covered by any event -- for a quick
+    day-level overlap check against another event record (see match_rate for the
+    event-level, group-wise version of the same comparison).
+    """
+    days = set()
+    for _, row in events_df.iterrows():
+        days.update(pd.date_range(row.start_date, row.end_date))
+    return days
+
+
+def overlapping_pairs(a, b, a_prefix='a', b_prefix='b'):
+    """Pair each row of `a` with every temporally-overlapping row of `b` (inclusive
+    start_date/end_date ranges). Returns (pairs_df, a_unmatched): pairs_df has one row
+    per overlapping (a, b) pair with `<a_prefix>_start`/`<a_prefix>_end`/
+    `<b_prefix>_start`/`<b_prefix>_end`/`lag_days` columns (lag_days = a.start_date -
+    b.start_date, positive meaning a starts after b), and a_unmatched is the subset of
+    `a` with no overlapping `b` row at all.
+    """
+    pairs, matched_a = [], set()
+    for ia, arow in a.iterrows():
+        for ib, brow in b.iterrows():
+            lo = max(arow.start_date, brow.start_date)
+            hi = min(arow.end_date, brow.end_date)
+            if lo <= hi:
+                matched_a.add(ia)
+                pairs.append({
+                    f'{a_prefix}_start': arow.start_date, f'{a_prefix}_end': arow.end_date,
+                    f'{b_prefix}_start': brow.start_date, f'{b_prefix}_end': brow.end_date,
+                    'lag_days': (arow.start_date - brow.start_date).days,
+                })
+    return pd.DataFrame(pairs), a.loc[~a.index.isin(matched_a)]
+
+
 # ---------------------------------------------------------------------------
 # Bootstrap uncertainty
 # ---------------------------------------------------------------------------
+
+
+def boot_ci_proportion(bool_array, n_boot=3000, ci=95, rng=None):
+    """Event-resampled bootstrap CI for the mean of a boolean array (e.g. "did this
+    event match X?" per event) -- each entry is treated as an independent unit, which
+    is valid for one-row-per-event arrays (unlike day-level data, where days within
+    one event are autocorrelated and resampling them independently would overstate
+    confidence).
+
+    Pass the SAME `rng` object across multiple calls (rather than leaving the default,
+    which creates a fresh generator per call) to get a single continuing random
+    stream, matching the common pattern of calling this once per variable/label in a
+    loop with one shared, seeded generator for the whole analysis.
+    """
+    bool_array = np.asarray(bool_array, dtype=bool)
+    rng = rng if rng is not None else np.random.default_rng()
+    n = len(bool_array)
+    boot = np.array([rng.choice(bool_array, size=n, replace=True).mean() for _ in range(n_boot)])
+    lo_pct, hi_pct = (100 - ci) / 2, 100 - (100 - ci) / 2
+    return np.percentile(boot, [lo_pct, hi_pct]) * 100
 
 def bootstrap_climatology_std(time_index, vals, window=5, n_boot=200, ci=90, random_state=0):
     """Year-block bootstrap confidence interval for the calendar-day-averaged
@@ -430,6 +508,33 @@ def _self_test():
     # percentile_climatology: 99th percentile should be >= 90th for every calendar day
     pct = percentile_climatology(time_index, vals, window=5, percentiles=(90, 99))
     assert all(pct[99][k] >= pct[90][k] for k in pct[90])
+
+    # climatology_dict with dropna/min_samples: a calendar day with too few valid
+    # (non-NaN) pooled values should come back NaN, not a value computed from scraps
+    sparse_vals = vals.copy()
+    sparse_vals[:] = np.nan
+    sparse_vals[:3] = [1.0, 2.0, 3.0]  # only 3 real values in the whole series
+    m, s = climatology_dict(time_index, sparse_vals, window=5, dropna=True, min_samples=10)
+    assert all(np.isnan(v) for v in m.values()), 'every calendar day has <10 valid samples'
+
+    # climatology_dict: check_wraparound=False must allow a Dec->Jan-spanning index
+    # that check_wraparound=True (the default) correctly rejects
+    wrap_dates = pd.date_range('2000-11-01', '2001-02-28')
+    wrap_vals = rng.normal(0, 1, len(wrap_dates))
+    climatology_dict(wrap_dates, wrap_vals, window=5, check_wraparound=False)  # must not raise
+
+    # event_days / overlapping_pairs: a 5-day event should contribute exactly 5 days,
+    # and an overlapping pair should report the correct onset lag
+    ev_a = pd.DataFrame({'start_date': [dates[0].date()], 'end_date': [dates[4].date()]})
+    ev_b = pd.DataFrame({'start_date': [dates[2].date()], 'end_date': [dates[6].date()]})
+    assert len(event_days(ev_a)) == 5
+    pairs, unmatched = overlapping_pairs(ev_a, ev_b)
+    assert len(pairs) == 1 and len(unmatched) == 0
+    assert pairs.loc[0, 'lag_days'] == (dates[0].date() - dates[2].date()).days
+
+    # boot_ci_proportion: CI of an all-True array should be exactly [100, 100]
+    lo_p, hi_p = boot_ci_proportion(np.ones(20, dtype=bool), n_boot=100, rng=rng)
+    assert lo_p == hi_p == 100.0
 
     print('ca_blocking_lib: all self-tests passed')
 

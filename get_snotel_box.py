@@ -13,6 +13,9 @@
 # Output (written to DATA_DIR, matching the Z500/T700 project's convention):
 #   snotel_box_stations.csv       -- station metadata (id, name, lat, lon, elev)
 #   snotel_box_swe_wy1990-2026.csv -- long-format daily SWE, all stations
+# Note: SWE is an impact variable, and the Sierra is where the vast majority of 
+# California's meaningful snowpack and water-supply-relevant signal actually lives
+# — the station network outside it is far sparser and climatologically different
 
 import os
 
