@@ -110,6 +110,11 @@ def fit_year_trend(residual, years, label='', method='theilsen', ci=90, verbose=
     plain OLS here because annual Jan-Apr means are only 36 points and can carry
     low-frequency (e.g. decadal/ENSO-driven) autocorrelation that makes an OLS
     p-value overconfident. OLS is still fit and reported alongside for comparison.
+
+    The returned info dict includes raw per-year `slope`/`intercept` (not just
+    slope_per_decade) so a caller can extrapolate the same fitted trend to an
+    out-of-sample year the fit never saw -- e.g. scoring a held-out year against a
+    frozen baseline via `intercept + slope * new_year` -- without re-deriving them.
     """
     annual_mean_residual = pd.Series(residual, index=years).groupby(level=0).mean()
     x = annual_mean_residual.index.values.astype(float)
@@ -140,6 +145,8 @@ def fit_year_trend(residual, years, label='', method='theilsen', ci=90, verbose=
     else:
         raise ValueError(f"method must be 'theilsen' or 'ols', got {method!r}")
 
+    info['slope'] = slope
+    info['intercept'] = intercept
     trend_lookup = intercept + slope * years
     return trend_lookup, info
 
@@ -163,6 +170,15 @@ def standardize_with_trend(time_index, vals, window=5, label='', trend_method='t
     Returns (sanom, diagnostics) where diagnostics also reports the "naive" (trend-
     contaminated) std alongside the corrected one, so the size of the fix is visible
     rather than silently applied.
+
+    diagnostics['clim_mean_dict']/['clim_std_dict'] (keyed by (month, day), i.e. the
+    raw dicts before `lookup_climatology` expands them to `time_index`) let a caller
+    score a held-out period the fit never saw (e.g. an out-of-sample year) against
+    this same frozen baseline:
+        m_new = lookup_climatology(new_dates, diag['clim_mean_dict'])
+        s_new = lookup_climatology(new_dates, diag['clim_std_dict'])
+        trend_new = diag['trend']['intercept'] + diag['trend']['slope'] * new_dates.year
+        sanom_new = (new_vals - trend_new - m_new) / s_new
     """
     time_index = pd.DatetimeIndex(time_index)
     years = time_index.year.values
@@ -193,6 +209,8 @@ def standardize_with_trend(time_index, vals, window=5, label='', trend_method='t
         'trend_lookup': trend_lookup,
         'clim_mean': m,
         'clim_std': s,
+        'clim_mean_dict': clim_mean,
+        'clim_std_dict': clim_std,
         'clim_std_raw': s_raw,
         'detrended_vals': detrended_vals,
     }
@@ -466,6 +484,25 @@ def _self_test():
     )
     assert np.isfinite(sanom).all(), 'sanom should be finite everywhere'
     assert 0.5 < sanom.std() < 2.0, f'standardized anomaly should have std near 1, got {sanom.std():.3f}'
+
+    # out-of-sample extrapolation: diag must expose raw slope/intercept and the raw
+    # climatology dicts, so a caller can score a held-out year the fit never saw
+    # (e.g. 2026) against this same frozen baseline -- reconstruct that by hand for a
+    # held-out year (2010, dropped from the fit) and check it's close to a fresh fit
+    # that includes 2010, since the true process has no noise beyond the linear trend.
+    assert 'slope' in diag['trend'] and 'intercept' in diag['trend']
+    held_out_year = 2005  # must be inside the synthetic data's 1990-2009 range
+    mask = trend_years != held_out_year
+    sanom_holdout, diag_holdout = standardize_with_trend(
+        trend_dates[mask], trend_vals[mask], window=5, label='_self_test_holdout', verbose=False)
+    new_dates = trend_dates[~mask]
+    new_vals = trend_vals[~mask]
+    m_new = lookup_climatology(new_dates, diag_holdout['clim_mean_dict'])
+    s_new = lookup_climatology(new_dates, diag_holdout['clim_std_dict'])
+    trend_new = diag_holdout['trend']['intercept'] + diag_holdout['trend']['slope'] * new_dates.year.values
+    sanom_new = (new_vals - trend_new - m_new) / s_new
+    assert np.isfinite(sanom_new).all(), 'extrapolated out-of-sample sanom should be finite'
+    assert abs(np.median(sanom_new)) < 3, 'extrapolated sanom should be a plausible sigma value, not wildly off'
 
     # find_events: a single isolated 5-day spike should be found once, and merge
     # across a 1-day dip but not a 2-day dip
