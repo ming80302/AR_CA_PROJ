@@ -58,7 +58,13 @@ def climatology_dict(time_index, vals, window=5, compute_std=True, min_samples=1
         pool = vals[mask]
         if dropna:
             pool = pool[~np.isnan(pool)]
-            if len(pool) < min_samples or (compute_std and pool.std() == 0):
+            # pool.std() == 0 is too strict a check here: a near-but-not-quite-constant
+            # pool (e.g. float roundoff on repeated sensor readings) can land at
+            # std ~1e-14 rather than exactly 0, sails past an exact-equality guard, and
+            # then blows up downstream when something divides by it. Caught via a
+            # WINDOW=1 run where one station's pooled SWE-diff std was 5.7e-14 -- not
+            # zero, but not a real, usable climatological spread either.
+            if len(pool) < min_samples or (compute_std and pool.std() < 1e-6):
                 clim_mean[k] = np.nan
                 if compute_std:
                     clim_std[k] = np.nan
@@ -565,6 +571,13 @@ def _self_test():
     sparse_vals[:3] = [1.0, 2.0, 3.0]  # only 3 real values in the whole series
     m, s = climatology_dict(time_index, sparse_vals, window=5, dropna=True, min_samples=10)
     assert all(np.isnan(v) for v in m.values()), 'every calendar day has <10 valid samples'
+
+    # climatology_dict with dropna: a pooled window that is near-constant but not
+    # exactly constant (float roundoff, not all-NaN) must still be caught as
+    # degenerate and return NaN, not a near-zero std that blows up downstream
+    near_const_vals = np.full(len(time_index), 5.0) + rng.normal(0, 1e-10, len(time_index))
+    m_nc, s_nc = climatology_dict(time_index, near_const_vals, window=5, dropna=True, min_samples=10)
+    assert all(np.isnan(v) for v in s_nc.values()), 'near-constant pooled std should be flagged as degenerate'
 
     # climatology_dict: check_wraparound=False must allow a Dec->Jan-spanning index
     # that check_wraparound=True (the default) correctly rejects
