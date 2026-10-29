@@ -14,3 +14,6 @@ __pycache__/
 # Data outputs -- these live on /glade/campaign, not in this repo
 *.nc
 *.csv
+
+# Personal running project log -- not meant for the shared repo
+proj_note.ipynb
