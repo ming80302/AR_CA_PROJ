@@ -1,12 +1,16 @@
 # AR/CA snowpack-heatwave project
 
-Does persistent California ridging/warm-spell "heat wave" activity (500 hPa ridging,
-700 hPa warm anomalies) in ERA5 show up as unusually rapid Sierra Nevada snowpack
-loss on the ground -- and does snow lost late in the season recover less than snow
-lost early? Two halves of one question, covered by two notebook families that share
-a data period (water years 1990-2025 fit, 2026 held out and scored out-of-sample)
-and a common analysis pattern (detrended calendar-day climatology, gap-tolerant
-multi-day persistence rule, bootstrap CIs).
+Use ERA5 to identify late-season heat waves over the West Coast: periods marked by
+both a pronounced atmospheric anomaly -- high-amplitude ridging or a blocking
+anticyclone -- and high temperatures in the lower troposphere, occurring late enough
+in the winter that there isn't much chance to make up the resulting snow loss before
+the full onset of spring. Find all such ridging/blocking-and-warm periods, find
+periods of unusually rapid snow decrease, and explore the relationship between them.
+
+Two halves of one question, covered by two notebook families that share a data period
+(water years 1990-2025 fit, 2026 held out and scored out-of-sample) and a common
+analysis pattern (detrended calendar-day climatology, gap-tolerant multi-day
+persistence rule, bootstrap CIs).
 
 See `proj_note.ipynb` for the running, dated log of decisions, findings, and
 follow-ups -- it's the most detailed record of *why* things are the way they are.
