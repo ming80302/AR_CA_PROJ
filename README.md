@@ -51,6 +51,11 @@ This README is an orientation map, not a substitute for it.
 - **`CA_snowmelt_methodC_5daymean_std.ipynb`** -- snow-side analog of the atmospheric
   Method C notebook, same 5-day-mean-std event definition applied to the network
   decline fraction, as a robustness check.
+- **`CA_methodA_vs_methodC_match_permutation_test.ipynb`** -- standalone permutation/
+  null test asking whether Method C's much higher heat-wave match rate (93% vs. Method
+  A's 61%) is mostly base-rate inflation from its larger event list, or genuine excess
+  detection. Self-contained: reads only the event CSVs the two notebooks above already
+  export.
 
 ## Supporting notebooks
 
