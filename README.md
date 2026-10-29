@@ -1,5 +1,10 @@
 # AR/CA snowpack-heatwave project
 
+**Status: ongoing, exploratory work.** Methodology, parameter choices, and even
+headline event counts have changed multiple times as stress-testing has turned up
+issues (see `proj_note.ipynb`); treat anything here as current best understanding,
+not a finished result.
+
 Use ERA5 to identify late-season heat waves over the West Coast: periods marked by
 both a pronounced atmospheric anomaly -- high-amplitude ridging or a blocking
 anticyclone -- and high temperatures in the lower troposphere, occurring late enough
