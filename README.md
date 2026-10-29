@@ -56,7 +56,8 @@ This README is an orientation map, not a substitute for it.
 
 - **`plot_ca_box_map.ipynb`** -- map of the California ERA5 analysis box.
 - **`snotel_box_stations_distribution.ipynb`** -- spatial/temporal coverage of the
-  SNOTEL station network before MSNT/CDEC were added to fill the southern Sierra gap.
+  combined SNOTEL + MSNT + CDEC network, matching exactly what
+  `CA_snowmelt_events_detrend_5day.ipynb` analyzes (312 stations, 147 daily-reporting).
 
 ## Shared library
 
