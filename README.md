@@ -134,18 +134,20 @@ Section 8's own numbers.
   source analysis this project is partly built on (`March_2026_Western-US-Heat
   Wave.pdf`, see below) and realizing a fixed-level composite can't resolve ridge
   structure the way a dynamically-correct surface can. Reproduces the paper's
-  theta-on-DT map and DT Hovmoller diagnostics. **Status: finished, and this is the
-  strongest evidence either upstream notebook has produced.** The DT Hovmoller shows a
-  normal, eastward-propagating Rossby wave train through January-February that
-  visibly stalls into a near-stationary pattern specifically during the March
-  window, with a persistent warm anomaly sitting almost directly over the CA
-  longitude -- textbook blocking, and potentially the differentiator
-  `CA_2026_upstream_mechanism_composite.ipynb`'s Section 7 follow-up couldn't find
-  (that notebook's ingredients -- NW Pacific ridging, an onset-phase AR-like moisture
-  plume -- showed up for a non-record episode too; wave-stalling, so far, looks more
-  specific to March). Caveat: this is a qualitative visual read of the Hovmoller, not
-  a quantified phase-speed/stationarity statistic -- flagged in the notebook as the
-  natural next step before treating it as a settled finding.
+  theta-on-DT map and DT Hovmoller diagnostics. **Status: finished, including a
+  retraction.** The theta-on-DT maps hold up well -- March shows the broadest,
+  smoothest amplified ridge of the four episodes. The Hovmoller's initial read (a
+  normal propagating wave that "visibly stalls" into blocking during March) did
+  **not** survive quantification: a whole-field phase-speed scan (Section 5, after two
+  cruder methods -- day-to-day peak tracking and two-point lag correlation -- failed
+  or gave inconsistent results) finds the *same* ~4-6 m/s eastward phase speed before
+  and during the March episode, with March's fit if anything cleaner, not slower. The
+  "textbook blocking" claim is retracted, not softened -- most likely an amplitude
+  illusion (March's anomaly was much larger, not slower-moving). Net result: across
+  both upstream notebooks, nothing tested so far (jet speed, NW Pacific ridging,
+  onset-window moisture, or now wave phase speed) explains why March persisted three
+  times longer than its WY2026 predecessors -- `CA_2026_upstream_mechanism_composite.ipynb`
+  Section 7's open question is still open.
 
 ## Supporting notebooks
 
