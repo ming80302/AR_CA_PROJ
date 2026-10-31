@@ -17,6 +17,14 @@ Two halves of one question, covered by two notebook families that share a data p
 analysis pattern (detrended calendar-day climatology, gap-tolerant multi-day
 persistence rule, bootstrap CIs).
 
+**A third thread, opened after March 2026 set records on both sides of that
+question simultaneously:** *why* do some ridging episodes persist far longer than
+others? The detection/matching work above treats every heat-wave event the same way
+regardless of duration; the March 2026 episode (19 days, vs. 7-9 days for its three
+WY2026 predecessors) motivated pulling upstream Pacific-basin fields and comparing
+them against the companion synoptic analyses this project is built on (see
+`## Mechanism` below and `## Related literature`).
+
 See `proj_note.ipynb` for the running, dated log of decisions, findings, and
 follow-ups -- it's the most detailed record of *why* things are the way they are.
 This README is an orientation map, not a substitute for it.
@@ -56,6 +64,46 @@ This README is an orientation map, not a substitute for it.
   A's 61%) is mostly base-rate inflation from its larger event list, or genuine excess
   detection. Self-contained: reads only the event CSVs the two notebooks above already
   export.
+- **`CA_snowmelt_april_vs_janmar_match_test.ipynb`** -- formally tests a fresh-eyes
+  review finding that the raw month-by-month match rate looks like it peaks in March
+  and drops in April (the single most common onset month, 59% of the Jan-Apr sample).
+  Fisher exact + bootstrap CI confirm a real April drop for Z500 (p=0.0014) that
+  survives (direction-wise) under Method C's heat-wave record too, though Method C's
+  near-ceiling Jan-Mar match rate (100%) leaves little room to detect it there. Also
+  tests whether unmatched April events are smaller/more routine (they aren't -- same
+  size as matched ones, all magnitude comparisons indistinguishable). Discusses Guo and
+  He (2026, see `## Related literature`) as a literature-backed explanation: reduced
+  spring snowpack cold content may lower the physical bar for rapid melt, independent
+  of whether a synoptic heat wave is detected.
+
+## Mechanism: why do some ridging episodes persist longer than others?
+
+Everything above treats heat-wave *detection* and event-level *matching* -- this new
+thread asks what differentiates a 19-day record episode (March 2026) from an ordinary
+7-9 day one, using upstream Pacific-basin fields the detection notebooks never pull
+(they only ever look at the small CA box). Both notebooks here reproduce the four
+WY2026 Z500 episode windows directly from the frozen 1990-2025 baseline (not
+hardcoded), so they can't silently drift from `CA_z500_t700_blocking_events_detrend_5day.ipynb`
+Section 8's own numbers.
+
+- **`CA_2026_upstream_mechanism_composite.ipynb`** -- first look, using fixed-pressure
+  composites (Z300, 300 hPa jet speed, SST, IVT) over a wide Pacific-North America
+  domain. Finds a real but modest signature (CA-box Z300 highest and domain-mean jet
+  speed lowest during the record March episode) but no clean omega-block shape, and an
+  IVT result that argues against a simple moisture-transport story. Explicitly an n=1,
+  non-anomaly (no historical upstream baseline yet) case-study look -- motivates a
+  test, isn't one.
+- **`CA_2026_dynamic_tropopause_diagnosis.ipynb`** -- follow-up using the dynamic
+  tropopause (2-PVU surface) instead of a fixed pressure level, after reading the
+  source analysis this project is partly built on (`March_2026_Western-US-Heat
+  Wave.pdf`, see below) and realizing a fixed-level composite can't resolve the
+  structure that paper actually found (a strengthened subtropical jet from a second,
+  upstream NW Pacific block -- not a weakened jet overall, which a naive domain-mean
+  misleadingly suggested). Reproduces the paper's theta-on-DT map and DT Hovmoller
+  diagnostics. **Status as of this README update: built and validated (the PV/theta
+  interpolation routine is unit-tested against synthetic columns), but the underlying
+  `upstream_pv_theta_2026.nc` extraction (`get_upstream_pv_theta.py`) was still running
+  at time of writing -- not yet executed against real data.**
 
 ## Supporting notebooks
 
@@ -63,6 +111,30 @@ This README is an orientation map, not a substitute for it.
 - **`snotel_box_stations_distribution.ipynb`** -- spatial/temporal coverage of the
   combined SNOTEL + MSNT + CDEC network, matching exactly what
   `CA_snowmelt_events_detrend_5day.ipynb` analyzes (312 stations, 147 daily-reporting).
+
+## Related literature
+
+Not part of the repo (kept in `~/ERA5/`, referenced for context):
+
+- **`March_2026_Western-US-Heat Wave.pdf`** (Chris Davis, UMass Amherst/NCAR/Paros
+  Center, June 2026) -- "The Anti-AR of March 2026," a dynamic-tropopause/PV analysis
+  of the same record event this project's 2026 out-of-sample test independently
+  flagged. Source of the upstream-mechanism framing in `CA_2026_dynamic_tropopause_diagnosis.ipynb`
+  above: a quasi-persistent Western US block reinforced by impinging eddies, an
+  upstream NW Pacific omega block that built an anomalously strong subtropical jet,
+  an inactive MJO, and an AR-like moisture stream feeding diabatic heating into the
+  ridge from upstream (title's "Anti-AR" paradox: an AR helped build the dry ridge).
+- **Guo and He (2026)**, *Environ. Res. Lett.* 21 194013, "Heatwaves drive rapid
+  snowmelt and disrupt streamflow in the western United States"
+  (`Guo_2026_Environ._Res._Lett._21_194013.pdf`) -- a published, WUS-wide (823 SNOTEL
+  stations, 2001-2024) companion study using a local station-temperature-percentile
+  heatwave definition rather than this project's synoptic Z500/T700 index. Key
+  parallel finding: even though ~98% of local heatwave periods show accelerated
+  snowmelt, only 55% of heatwave-impacted watersheds show a detectable streamflow
+  response -- the same "near-universal at the proximate step, only moderate one step
+  downstream" pattern this project keeps finding. Their spring cold-content mechanism
+  is cited in `CA_snowmelt_april_vs_janmar_match_test.ipynb`'s conclusion as a
+  candidate explanation for the April match-rate drop.
 
 ## Shared library
 
@@ -87,6 +159,9 @@ summary:
 | `check_msnt_cdec_overlap.py` | -- | crosswalk: MSNT station -> matching CDEC station |
 | `build_combined_sierra_swe.py` | SNTL+MSNT+CDEC | `combined_sierra_stations.csv`, `combined_sierra_swe_wy1990-2026.csv` -- the snow notebooks' actual input |
 | `get_station_precip_box.py` | NRCS AWDB + CDEC | station-measured precipitation, for the dry/wet cross-check |
+| `get_upstream_pacific.py` | ERA5 pressure levels + surface + vertically-integrated | `upstream_pacific_<year>.nc` (Z300, U300, V300, MSLP, SST, cloud cover, IVT components) over a wide Pacific-North America domain, for the mechanism composite notebook |
+| `get_upstream_pv_theta.py` | ERA5 pressure levels | `upstream_pv_theta_<year>.nc` (PV, T, U, V on an 11-level 500-50 hPa bracket), for locating the dynamic tropopause |
+| `get_t2m_sierra.py` | ERA5 surface | `t2m_sierra_<year>.nc` (Sierra-box 2m temperature), for a Guo-and-He-style local-heatwave comparison (in progress) |
 
 `job_array_get_z500_t700_ca.pbs` / `job_array_get_precip_sf_ca.pbs` run the two ERA5
 fetch scripts as PBS job arrays (one task per water year) on Casper.
