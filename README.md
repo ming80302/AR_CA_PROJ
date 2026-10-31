@@ -64,17 +64,33 @@ This README is an orientation map, not a substitute for it.
   A's 61%) is mostly base-rate inflation from its larger event list, or genuine excess
   detection. Self-contained: reads only the event CSVs the two notebooks above already
   export.
-- **`CA_snowmelt_april_vs_janmar_match_test.ipynb`** -- formally tests a fresh-eyes
-  review finding that the raw month-by-month match rate looks like it peaks in March
-  and drops in April (the single most common onset month, 59% of the Jan-Apr sample).
-  Fisher exact + bootstrap CI confirm a real April drop for Z500 (p=0.0014) that
-  survives (direction-wise) under Method C's heat-wave record too, though Method C's
+- **`CA_snowmelt_april_vs_janmar_match_test.ipynb`** -- *motivation:* a fresh-eyes
+  climate-scientist review was asked to sanity-check a proposed storyline ("apart from
+  a few atmospheric rivers, Z500/T700 indicates melt events well, and perhaps better
+  later in the season") against the project's own numbers -- the raw month-by-month
+  match rate instead showed it peaking in March and dropping sharply in April, the
+  single most common onset month (59% of the Jan-Apr sample), the opposite of the
+  proposed claim. This notebook puts a formal test behind that finding. Fisher exact +
+  bootstrap CI confirm a real April drop for Z500 (p=0.0014) that survives
+  (direction-wise) under Method C's heat-wave record too, though Method C's
   near-ceiling Jan-Mar match rate (100%) leaves little room to detect it there. Also
   tests whether unmatched April events are smaller/more routine (they aren't -- same
   size as matched ones, all magnitude comparisons indistinguishable). Discusses Guo and
   He (2026, see `## Related literature`) as a literature-backed explanation: reduced
   spring snowpack cold content may lower the physical bar for rapid melt, independent
-  of whether a synoptic heat wave is detected.
+  of whether a synoptic heat wave is detected. **Status: finished** -- executed clean,
+  fresh-eyes-reviewed against both reference papers, one minor citation imprecision
+  (paper says persistence is longest in spring *and winter*, tied, not spring alone)
+  fixed.
+- **`CA_t2m_local_heatwave_vs_snowmelt.ipynb`** -- direct follow-up testing the Guo-and-He
+  explanation above rather than just citing it: builds a local (Sierra-box T2M)
+  quantile-exceedance heat-wave definition, swept across Guo and He's own cited
+  parameter range (90th/95th percentile x 2-5 day minimum persistence), and matches it
+  against the same melt events instead of the synoptic Z500/T700 record. Finds the
+  April gap nearly disappears at the loosest (2-day) setting but reopens at longer
+  required persistence -- refining the cold-content story into a *persistence-threshold*
+  effect (April melt needs only a brief warm pulse, not a sustained one) rather than a
+  simple local-vs-synoptic scale effect.
 
 ## Mechanism: why do some ridging episodes persist longer than others?
 
@@ -86,13 +102,27 @@ WY2026 Z500 episode windows directly from the frozen 1990-2025 baseline (not
 hardcoded), so they can't silently drift from `CA_z500_t700_blocking_events_detrend_5day.ipynb`
 Section 8's own numbers.
 
-- **`CA_2026_upstream_mechanism_composite.ipynb`** -- first look, using fixed-pressure
-  composites (Z300, 300 hPa jet speed, SST, IVT) over a wide Pacific-North America
-  domain. Finds a real but modest signature (CA-box Z300 highest and domain-mean jet
-  speed lowest during the record March episode) but no clean omega-block shape, and an
-  IVT result that argues against a simple moisture-transport story. Explicitly an n=1,
-  non-anomaly (no historical upstream baseline yet) case-study look -- motivates a
-  test, isn't one.
+- **`CA_2026_upstream_mechanism_composite.ipynb`** -- *motivation:* directly prompted
+  by the question "what allowed the dry warm conditions to persist for so long?" after
+  discussing how exceptional the March 2026 episode was. First look, using
+  fixed-pressure composites (Z300, 300 hPa jet speed, SST, IVT) over a wide
+  Pacific-North America domain, explicitly an n=1, non-anomaly (no historical upstream
+  baseline yet) case-study -- motivates a test, isn't one. The first pass found a
+  CA-box Z300 highest and domain-mean jet speed lowest during the record March episode,
+  read at the time as a weakened-jet / no-omega-block signature. **Status: finished,
+  self-corrected.** After reading `March_2026_Western-US-Heat Wave.pdf` (Davis 2026,
+  see `## Related literature`) and a fresh-eyes review, two of those readings turned
+  out to be domain-mean artifacts rather than real findings -- a Section 7 follow-up
+  (now correctly positioned after the original conclusion it follows up on, fixing an
+  ordering bug a fresh-eyes review caught) splits the jet by latitude band, checks a
+  NW Pacific box for Davis's reported upstream omega
+  block, and recomposites IVT over just the 5-day onset window instead of the full
+  episode mean. Result: no clean single discriminator for March's exceptional
+  persistence -- Davis's reported ingredients (an AR-like moisture plume feeding a NW
+  Pacific block) show up at the onset of *both* March and a non-record 8-day episode
+  six weeks earlier, so they look necessary-ish but not sufficient. Consistent with,
+  not a resolution of, Davis's own admission that "the link between simultaneous
+  blocking events is unclear."
 - **`CA_2026_dynamic_tropopause_diagnosis.ipynb`** -- follow-up using the dynamic
   tropopause (2-PVU surface) instead of a fixed pressure level, after reading the
   source analysis this project is partly built on (`March_2026_Western-US-Heat
@@ -161,7 +191,7 @@ summary:
 | `get_station_precip_box.py` | NRCS AWDB + CDEC | station-measured precipitation, for the dry/wet cross-check |
 | `get_upstream_pacific.py` | ERA5 pressure levels + surface + vertically-integrated | `upstream_pacific_<year>.nc` (Z300, U300, V300, MSLP, SST, cloud cover, IVT components) over a wide Pacific-North America domain, for the mechanism composite notebook |
 | `get_upstream_pv_theta.py` | ERA5 pressure levels | `upstream_pv_theta_<year>.nc` (PV, T, U, V on an 11-level 500-50 hPa bracket), for locating the dynamic tropopause |
-| `get_t2m_sierra.py` | ERA5 surface | `t2m_sierra_<year>.nc` (Sierra-box 2m temperature), for a Guo-and-He-style local-heatwave comparison (in progress) |
+| `get_t2m_sierra.py` | ERA5 surface | `t2m_sierra_<year>.nc` (Sierra-box 2m temperature, 1990-2026), for the Guo-and-He-style local-heatwave comparison (`CA_t2m_local_heatwave_vs_snowmelt.ipynb`) |
 
 `job_array_get_z500_t700_ca.pbs` / `job_array_get_precip_sf_ca.pbs` run the two ERA5
 fetch scripts as PBS job arrays (one task per water year) on Casper.
