@@ -84,13 +84,19 @@ This README is an orientation map, not a substitute for it.
   fixed.
 - **`CA_t2m_local_heatwave_vs_snowmelt.ipynb`** -- direct follow-up testing the Guo-and-He
   explanation above rather than just citing it: builds a local (Sierra-box T2M)
-  quantile-exceedance heat-wave definition, swept across Guo and He's own cited
-  parameter range (90th/95th percentile x 2-5 day minimum persistence), and matches it
-  against the same melt events instead of the synoptic Z500/T700 record. Finds the
-  April gap nearly disappears at the loosest (2-day) setting but reopens at longer
-  required persistence -- refining the cold-content story into a *persistence-threshold*
-  effect (April melt needs only a brief warm pulse, not a sustained one) rather than a
-  simple local-vs-synoptic scale effect.
+  quantile-exceedance heat-wave definition, swept across the general relative-threshold
+  range Guo and He cite from the broader heatwave literature (90th/95th percentile x
+  2-5 day minimum persistence), and matches it against the same melt events instead of
+  the synoptic Z500/T700 record. Finds the April gap nearly disappears at the loosest
+  (2-day) setting but reopens at longer required persistence -- refining the
+  cold-content story into a *persistence-threshold* effect (April melt needs only a
+  brief warm pulse, not a sustained one) rather than a simple local-vs-synoptic scale
+  effect. **Status: finished, fresh-eyes-reviewed.** One attribution fix: the
+  90th/95th-percentile, 2-5-day range is the general literature context Guo and He cite
+  (Robinson 2001; Perkins and Alexander 2013) while reviewing common heatwave
+  definitions, not a confirmed statement of their own specific method (deferred in the
+  paper to a supporting-information file this project doesn't have) -- the notebook
+  originally overstated that attribution in five places, now corrected.
 
 ## Mechanism: why do some ridging episodes persist longer than others?
 
