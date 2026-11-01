@@ -205,6 +205,30 @@ Section 8's own numbers.
   above. Section 5's conclusion gives a concrete cost estimate (~11 GB + ~63 GB of new
   ERA5 storage, likely hours of compute) for extending the upstream-Pacific fetch to
   the full record, which this notebook deliberately does not do on its own.
+- **`CA_2026_wave_activity_flux.ipynb`** -- *motivation:* re-reading
+  `March_2026_Western-US-Heat Wave.pdf` closely for this thread found that Davis's own
+  analysis (theta-on-DT maps, DT Hovmoller diagrams, IVT, PV-budget cross-sections)
+  never computes a wave-activity flux, even though the paper's own stated "local
+  cause" is a blocking anticyclone "reinforced by impinging eddies" -- exactly the
+  claim a Takaya-and-Nakamura (2001) wave-activity-flux diagnostic is built to test
+  directly. Computes the horizontal WAF at 300 hPa from the already-fetched
+  `upstream_pacific_2026.nc` (no new fetch) for all four WY2026 episodes. **Status:
+  finished, null -- and the opposite of what the hypothesis predicts.** The record
+  March episode's CA-box-mean convergence (+1.4e-5 m/s^2, 53% of days convergent) is
+  weaker and less sustained than the non-record, 8-day Late Jan/Feb episode (+4.1e-5,
+  62% of days convergent) -- nearly 3x stronger convergence in an episode less than
+  half as long. Over the wider NW-Pacific-to-CA wave path, all four episodes show net
+  *divergence* on average, with no March-specific signature either way. A fourth
+  consistent null result (joining intensity, onset timing, and local spatial
+  structure), and a direct failure of one of Davis's two proposed mechanisms --
+  consistent with Davis's own admission that "the link between simultaneous blocking
+  events is unclear." Real caveats stated in the notebook: still n=1 (one season, not
+  the full-record test that actually worked for local predictors), the basic state is
+  2026's own seasonal mean rather than a multi-year climatology (no other year's
+  upstream data exists), and the raw WAF vector field has a handful of extreme
+  outlier pixels near the weak-wind mask boundary (a known numerical sensitivity of
+  the Takaya-Nakamura formula, not a sign the area-averaged convergence numbers the
+  conclusion rests on are wrong).
 
 ## Method A vs. Method C: cross-cutting comparison
 
