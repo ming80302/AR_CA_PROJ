@@ -184,6 +184,27 @@ Section 8's own numbers.
   onset-window moisture, or now wave phase speed) explains why March persisted three
   times longer than its WY2026 predecessors -- `CA_2026_upstream_mechanism_composite.ipynb`
   Section 7's open question is still open.
+- **`CA_ridging_persistence_drivers.ipynb`** -- *motivation:* both notebooks above test
+  upstream-Pacific precursor hypotheses against a single contrast -- the four WY2026
+  episodes, all from one year, because upstream Pacific fields have only ever been
+  fetched for 2026. A fresh-eyes review flagged this as an n=1 case-study problem that
+  more upstream diagnostics against the same contrast can't fix. This notebook pools
+  the full 1990-2025 Method A event record (48 Z500 / 47 T700 events) instead, and
+  tests three cheap, zero-new-fetch angles: does event intensity predict duration, does
+  onset month predict duration, does local CA-box spatial structure differ between
+  long- and short-duration halves. **Status: finished, null on all three.** Peak
+  intensity doesn't robustly predict duration (T700's nominal Pearson r=0.33, p=0.022
+  doesn't survive the more outlier-robust Spearman test, rho=0.24, p=0.10); mean
+  intensity shows no relationship at all; onset month doesn't predict duration either
+  (Z500 p=0.36, T700 marginal p=0.075); and long- vs. short-duration composites are
+  essentially identical in amplitude (within ~1-5%, no formal difference test run).
+  This is a genuinely useful negative result, not a dead end: with real statistical
+  power for the first time (47-48 events, not 4), it rules out the three simplest
+  possible explanations and strengthens the case that the answer, if there is one, is
+  upstream rather than local -- consistent with, not a resolution of, the two notebooks
+  above. Section 5's conclusion gives a concrete cost estimate (~11 GB + ~63 GB of new
+  ERA5 storage, likely hours of compute) for extending the upstream-Pacific fetch to
+  the full record, which this notebook deliberately does not do on its own.
 
 ## Method A vs. Method C: cross-cutting comparison
 
