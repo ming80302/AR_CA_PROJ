@@ -185,6 +185,78 @@ Section 8's own numbers.
   times longer than its WY2026 predecessors -- `CA_2026_upstream_mechanism_composite.ipynb`
   Section 7's open question is still open.
 
+## Method A vs. Method C: cross-cutting comparison
+
+Both the atmospheric and snow sides define a headline "Method A" (explicit threshold +
+consecutive-day persistence rule) and a "Method C" (smooth first -- a 5-day rolling
+mean, or the snow side's already-derived decline metric -- then threshold *that*
+series against its own distribution with `min_duration=1`, folding persistence into
+the smoothing instead of asserting it separately). Method C's inclusion rule is
+structurally looser by construction (a single day where the smoothed series crosses
+threshold counts, vs. Method A's requirement that 5 *raw* days each individually
+clear it), so "Method C finds more events everywhere" is expected, not itself a
+finding -- the real question is whether the extra events are physically meaningful or
+just noise, and whether sigma-based ranking still means the same thing once you've
+smoothed.
+
+**Atmospheric (Z500/T700): Method C behaves well.** Every Method A event (48/48 Z500,
+47/47 T700) has an overlapping Method C episode -- a strict superset, not a different
+phenomenon. Method C finds ~2.9x more events (139/137 vs. 48/47) and ~2x more
+event-days (17% vs. 8% of the Jan-Apr record). The 5-day-mean distribution is 19-20%
+narrower than daily (bootstrap CI excludes zero), consistent with ordinary synoptic
+autocorrelation -- nothing pathological. Because Z500/T700 are continuous,
+free-running fields with comparable variance all season, **ranking by peak sigma
+remains physically meaningful** (subject only to the ordinary winner's-curse caveat of
+picking a top-10 from noisy data).
+
+**Snow (Sierra SWE rapid decline): Method C is much messier.** Against a matched
+control built on the same raw substrate (Method A', 1-day SWE diff with Method A's
+persistence rule), Method C finds ~5x more events (129 vs. 25) -- a bigger inflation
+than the atmospheric side's 2.9x -- and only 18% of its episodes have any Method A'
+counterpart at all. Containment of the real headline Method A is nearly but not
+perfectly complete (57/58, one exception). Critically, **ranking by peak sigma is not
+just noisier here, it's actively misleading**: the Sierra network-decline fraction is
+a bounded, zero-inflated quantity whose climatological variance is ~8x smaller in
+January than April, so a sigma-based "largest events" list ranks modest January blips
+above genuinely larger April melt episodes -- the opposite of the atmospheric side's
+behavior, and a direct, generalizable consequence of seasonal heteroscedasticity that
+a naive port of the Z500/T700 approach would have silently inherited. Use raw
+`peak_frac` or an empirical percentile to rank snow-side events, never `peak_sanom`.
+
+**Cross-domain: does Method C's looser heat-wave definition predict snowmelt
+better?** Genuinely mixed, not a clean win for Method C. Raw match rate against Sierra
+rapid-decline events jumps from 61%/59% (Method A) to 93%/93% (Method C), and a
+permutation test confirms this isn't pure base-rate inflation from a denser event
+calendar (Method C's excess over its own, higher chance baseline is larger, not
+smaller, than Method A's: +62 vs. +47 points). But the properly-controlled
+block-level test only marginally favors Method C (p=9.8e-13 vs. 4.1e-12 -- both
+overwhelming, practically indistinguishable), and the raw day-level enrichment ratio
+actually favors Method A (3.1x vs. 2.7x), since Method C's larger, more inclusive
+calendar dilutes that particular contrast. Four different statistics (match rate,
+permutation excess, block p-value, enrichment ratio) rank the two methods three
+different ways depending on which one is asked -- that is an honest
+recall-vs-precision tradeoff to report in full, not an artifact to resolve into one
+number.
+
+**Conclusion and recommendation.** Method A remains the primary, headline definition
+on both sides: simpler, more interpretable, and -- critically on the snow side --
+free of a ranking method that is actively wrong. Method C is a validated robustness
+check, not a replacement, and its reliability is asymmetric: trustworthy for both
+counting and ranking on the atmospheric side, trustworthy only for counting (never
+ranking) on the snow side. The generalizable lesson is about homoscedasticity, not
+Method A vs. C specifically -- a standardize-then-smooth-then-rank approach is safe on
+a continuous, roughly-constant-variance physical field and dangerous on a bounded,
+seasonally heteroscedastic derived quantity; checking whether a new variable's
+variance is stable across the season, before porting this kind of method to it, would
+catch this class of problem before it requires a dedicated stress-test section to
+discover. For the applied question "does a looser atmospheric heat-wave definition
+better explain snowmelt," the honest answer is mixed: a win on recall that survives a
+permutation-test sanity check, but a wash or a loss on the two statistics that control
+for Method C's larger event calendar -- anchor downstream claims on Method A's
+cleaner, matched comparison and treat Method C's numbers as corroborating, not
+decisive, exactly as `CA_methodA_vs_methodC_match_permutation_test.ipynb` already
+frames it.
+
 ## Supporting notebooks
 
 - **`plot_ca_box_map.ipynb`** -- map of the California ERA5 analysis box.
