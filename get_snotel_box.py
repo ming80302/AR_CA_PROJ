@@ -19,10 +19,8 @@
 
 import os
 
-import pandas as pd
-import requests
+from awdb_fetch_lib import fetch_stations, fetch_swe
 
-API = 'https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1'
 DATA_DIR = '/glade/campaign/mmm/c3we/mingge/ERA5/CA_blocking/'
 
 # Sierra Nevada bounding box, ERA5 (0-360) longitude convention -- converted
@@ -39,81 +37,26 @@ LON_E = SIERRA_LON_E - 360.0
 BEGIN_DATE = '1989-10-01'
 END_DATE = '2026-07-31'
 
-IN_MM = 25.4  # SNOTEL WTEQ is reported in inches; 1 in = 25.4 mm
-
-
-def fetch_stations():
-    # '*:*:SNTL' -- any state, network SNTL -- so stations just across the
-    # CA/NV border (e.g. Tahoe basin) aren't missed; filter to the box below.
-    r = requests.get(
-        f'{API}/stations',
-        params={'stationTriplets': '*:*:SNTL', 'activeOnly': 'true'},
-        headers={'accept': 'application/json'},
-        timeout=60,
-    )
-    r.raise_for_status()
-    stations = r.json()
-    df = pd.DataFrame([
-        {
-            'stationTriplet': s['stationTriplet'],
-            'name': s['name'],
-            'elevation_ft': s['elevation'],
-            'latitude': s['latitude'],
-            'longitude': s['longitude'],
-            'beginDate': s['beginDate'][:10],
-        }
-        for s in stations
-    ]).sort_values('stationTriplet').reset_index(drop=True)
-
-    in_box = (
-        df['latitude'].between(SIERRA_LAT_S, SIERRA_LAT_N)
-        & df['longitude'].between(LON_W, LON_E)
-    )
-    return df[in_box].reset_index(drop=True)
-
-
-def fetch_swe(triplets):
-    # one request for all stations x the full 1990-2026 period -- the AWDB
-    # API handles this in a single call, no need to page by station or year.
-    r = requests.get(
-        f'{API}/data',
-        params={
-            'stationTriplets': ','.join(triplets),
-            'elements': 'WTEQ',
-            'duration': 'DAILY',
-            'beginDate': BEGIN_DATE,
-            'endDate': END_DATE,
-        },
-        headers={'accept': 'application/json'},
-        timeout=180,
-    )
-    r.raise_for_status()
-    records = []
-    for station in r.json():
-        triplet = station['stationTriplet']
-        if not station['data']:
-            continue
-        for v in station['data'][0]['values']:
-            # a day with no reading omits 'value' entirely rather than
-            # setting it to null -- treat both the same as missing.
-            val = v.get('value')
-            if val is not None:
-                records.append((triplet, v['date'], val * IN_MM))
-    return pd.DataFrame(records, columns=['stationTriplet', 'date', 'swe_mm'])
-
 
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
 
     print(f'Fetching SNOTEL stations in Sierra box '
           f'({SIERRA_LAT_S}-{SIERRA_LAT_N}N, {SIERRA_LON_W}-{SIERRA_LON_E}E) ...')
-    stations_df = fetch_stations()
+    # '*:*:SNTL' -- any state, network SNTL -- so stations just across the
+    # CA/NV border (e.g. Tahoe basin) aren't missed; box-filtered below.
+    stations_df = fetch_stations(
+        '*:*:SNTL', BEGIN_DATE, END_DATE,
+        lat_range=(SIERRA_LAT_S, SIERRA_LAT_N), lon_range=(LON_W, LON_E),
+    )
     stations_csv = os.path.join(DATA_DIR, 'snotel_box_stations.csv')
     stations_df.to_csv(stations_csv, index=False)
     print(f'{len(stations_df)} stations -> {stations_csv}')
 
     print(f'Fetching daily SWE (WTEQ), {BEGIN_DATE} to {END_DATE} ...')
-    swe_df = fetch_swe(stations_df['stationTriplet'])
+    # one request for all stations x the full 1990-2026 period -- the AWDB
+    # API handles this in a single call, no need to page by station or year.
+    swe_df = fetch_swe(stations_df['stationTriplet'], BEGIN_DATE, END_DATE)
     swe_csv = os.path.join(DATA_DIR, 'snotel_box_swe_wy1990-2026.csv')
     swe_df.to_csv(swe_csv, index=False)
     print(f'{len(swe_df)} station-day SWE records -> {swe_csv}')

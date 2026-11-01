@@ -48,8 +48,9 @@ This README is an orientation map, not a substitute for it.
 ## Snow side: Sierra Nevada rapid snowmelt/sublimation detection
 
 - **`CA_snowmelt_events_detrend_5day.ipynb`** -- the headline companion notebook.
-  Combined SNOTEL + MSNT + CDEC daily SWE network (312 stations, 147 daily-reporting)
-  over the Sierra box. Per-station decline metric: `min(SWE over a 3-day window) -
+  Combined SNOTEL + MSNT + CDEC daily SWE network (404 stations, 150 daily-reporting
+  -- revised 2026-11-01, see station-count note below) over the Sierra box.
+  Per-station decline metric: `min(SWE over a 3-day window) -
   SWE at window start` (min-in-window, `WINDOW=3` -- adopted after stress-testing;
   see `proj_note.ipynb`), standardized per calendar day, network event = >=30% of
   reporting stations simultaneously >=1 SD below normal for >=5 gap-tolerant days.
@@ -66,6 +67,16 @@ This README is an orientation map, not a substitute for it.
   the earlier ~0.5; 3 of 45 "dry" events now show a reverse disagreement against
   station gauges, not zero) -- see the notebook's own Section 5c conclusion for the
   full caveat.
+  **Station-count note (2026-11-01):** `get_snotel_box.py`/`get_msnt_box.py` were
+  fetching AWDB with `activeOnly=true`, and `get_cdec_box.py` with CDEC's equivalent
+  active-station filter -- both silently drop stations decommissioned before today
+  even if they have real data inside this project's 1990-2026 study window (verified
+  live: 5 of 72 in-box MSNT stations and 92 of 367 in-box CDEC stations were being
+  dropped this way). Fixed to filter by date-range overlap with the study period
+  instead of current active status; the combined network grew from 312 to **404
+  stations** (150 daily-reporting, up from 147: 36 SNTL + 72 MSNT, up from 67 + 296
+  CDEC, up from 209). All headline numbers in this README and the snowmelt notebooks
+  below have been recomputed against the corrected, larger network.
 - **`CA_snowmelt_methodC_5daymean_std.ipynb`** -- snow-side analog of the atmospheric
   Method C notebook, same 5-day-mean-std event definition applied to the network
   decline fraction, as a robustness check. **Numbers revised (2026-10-31):** its
@@ -79,6 +90,11 @@ This README is an orientation map, not a substitute for it.
   qualitative conclusions are unchanged -- Method C is still a ~5x looser event-counting
   method than its matched control and still not defensible as a sigma-based ranking
   method -- only the specific numbers moved.
+  **Numbers revised again (2026-11-01):** the station-count fix above (312->404
+  stations) moved the Method C counts from 127/64/31 to **129/62/29** (1/2/3 sigma)
+  and the bootstrap-narrower result from 19.2% to **19.3%** (90% CI [18.0%, 20.7%]);
+  the real-Method-A match rate against Method C stayed at 57/58 (98%). Again, no
+  qualitative conclusion changed.
 - **`CA_methodA_vs_methodC_match_permutation_test.ipynb`** -- standalone permutation/
   null test asking whether Method C's much higher heat-wave match rate (93% vs. Method
   A's 61%) is mostly base-rate inflation from its larger event list, or genuine excess
@@ -174,7 +190,7 @@ Section 8's own numbers.
 - **`plot_ca_box_map.ipynb`** -- map of the California ERA5 analysis box.
 - **`snotel_box_stations_distribution.ipynb`** -- spatial/temporal coverage of the
   combined SNOTEL + MSNT + CDEC network, matching exactly what
-  `CA_snowmelt_events_detrend_5day.ipynb` analyzes (312 stations, 147 daily-reporting).
+  `CA_snowmelt_events_detrend_5day.ipynb` analyzes (404 stations, 150 daily-reporting).
 
 ## Related literature
 

@@ -9,12 +9,14 @@
 #
 # Why this wasn't already fetched: get_snotel_box.py / get_msnt_box.py / get_cdec_box.py
 # only ever requested SWE (WTEQ / CDEC sensor 3). Availability turns out to be very
-# uneven across the three source networks:
+# uneven across the three source networks (counts as of 2026-11-01, after fixing
+# the active-station filtering bug in the three fetch scripts above -- see
+# awdb_fetch_lib.py / get_cdec_box.py / build_combined_sierra_swe.py comments):
 #   SNTL (NRCS, element PRCP)        -- all 36 of 36 daily-reporting stations
-#   MSNT ("Cooperator Snow Sensors") -- 0 of 67: this network has no precipitation
+#   MSNT ("Cooperator Snow Sensors") -- 0 of 72: this network has no precipitation
 #                                        gauge at all, only SWE sensors
-#   CDEC (sensor 45, fallback 2)     -- a handful of the 44 daily-reporting candidates
-# So only ~41 of the 147 daily-reporting Sierra stations (28%) have any precipitation
+#   CDEC (sensor 45, fallback 2)     -- 26 of the 42 daily-reporting candidates
+# So only 62 of the 150 daily-reporting Sierra stations (41%) have any precipitation
 # measurement, concentrated in the SNOTEL-covered northern Sierra; MSNT's entire
 # southern-Sierra footprint (Yosemite/Mammoth/Kings Canyon/Sequoia/Kern) has none.
 # That's a real coverage gap for a station-based cross-check, not a reason to skip it
@@ -33,7 +35,7 @@
 # Usage: python get_station_precip_box.py
 #
 # Output (written to DATA_DIR, matching the project's convention):
-#   station_precip_box_stations.csv       -- which of the 147 daily-reporting
+#   station_precip_box_stations.csv       -- which of the 150 daily-reporting
 #                                             stations have a precipitation
 #                                             measurement, and from which source
 #   station_precip_box_wy1990-2025.csv    -- long-format daily precipitation (mm),

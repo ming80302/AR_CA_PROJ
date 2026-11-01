@@ -57,11 +57,19 @@ MISSING = -9999
 
 
 def fetch_stations():
+    # No active-only filter -- CDEC's station search doesn't expose begin/end
+    # dates to filter by overlap with the study period instead (unlike AWDB),
+    # so the safe choice is to not filter on current active status at all: a
+    # station decommissioned today may still have real data within 1990-2026.
+    # Verified live: adding 'active_chk': 'on', 'active': 'Y' here drops the
+    # in-box count from 367 to 275 -- 92 stations, a far bigger gap than the
+    # equivalent AWDB (SNOTEL/MSNT) issue this fix is modeled on. Any station
+    # with no data in the study period just contributes zero rows to the SWE
+    # fetch below, so including it is harmless.
     r = requests.get(
         f'{API}/staSearch',
         params={
             'sensor_chk': 'on', 'sensor': SENSOR_NUM, 'dur': 'D',
-            'active_chk': 'on', 'active': 'Y',
             'loc_chk': 'on', 'lon1': LON_W, 'lon2': LON_E, 'lat1': SIERRA_LAT_S, 'lat2': SIERRA_LAT_N,
             'nearby': '', 'basin': '', 'hydro': '', 'county': '', 'operator': '',
             'display': 'sta',

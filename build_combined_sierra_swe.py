@@ -11,13 +11,22 @@
 #   CDEC  (get_cdec_box.py +   -- same southern terrain, but raw CDEC
 #          qc_cdec_swe.py)        telemetry with heuristic QC applied here
 #
-# check_msnt_cdec_overlap.py found all 67 in-box MSNT stations already
-# present in the CDEC pull (65 exact stationId match, 2 by lat/lon
-# proximity -- BLC2/BLC, TES/TGP). For those overlapping stations we prefer
-# the MSNT (AWDB-QC'd) version over CDEC's raw duplicate; the ~208 remaining
-# CDEC stations (DWR, USBR, utilities, parks, ranger districts -- no AWDB
+# check_msnt_cdec_overlap.py found all 72 in-box MSNT stations already
+# present in the CDEC pull (71 exact stationId match, 1 by lat/lon
+# proximity -- BLC2/BLC). For those overlapping stations we prefer the MSNT
+# (AWDB-QC'd) version over CDEC's raw duplicate; the ~296 remaining CDEC
+# stations (DWR, USBR, utilities, parks, ranger districts -- no AWDB
 # counterpart) are kept from the QC'd CDEC feed since they're the only
 # source for that coverage.
+#
+# Counts as of 2026-11-01, after fixing get_snotel_box.py/get_msnt_box.py/
+# get_cdec_box.py's active-station filtering (see awdb_fetch_lib.py /
+# get_cdec_box.py comments) -- was 67/65/2/~208 before. One of the 72 exact
+# matches ("BLC:CA:MSNT", named "Robbs Powerhouse") collides on stationId
+# with CDEC's "BLC" (Blue Canyon) purely by string coincidence, not a real
+# duplicate location -- harmless for this script (the shared CDEC id is
+# still dropped exactly once either way) but worth knowing if `match_type`
+# is ever trusted as "same physical station."
 #
 # Usage: python build_combined_sierra_swe.py
 #   (run get_snotel_box.py, get_msnt_box.py, get_cdec_box.py, qc_cdec_swe.py,
