@@ -229,6 +229,31 @@ Section 8's own numbers.
   outlier pixels near the weak-wind mask boundary (a known numerical sensitivity of
   the Takaya-Nakamura formula, not a sign the area-averaged convergence numbers the
   conclusion rests on are wrong).
+- **`CA_ridging_persistence_drivers_upstream.ipynb`** -- *motivation:* every upstream
+  diagnostic above was an n=4 case study (one season); `CA_ridging_persistence_drivers.ipynb`
+  found real statistical power only comes from the full 47-48-event record, but tested
+  local-only predictors. The 1990-2025 upstream-Pacific fetch (`job_array_get_upstream_pacific.pbs`)
+  closes that gap: this notebook re-tests Davis's two most concrete hypotheses --
+  precursor NW-Pacific ridging (5-day pre-onset) and onset-window moisture transport --
+  plus three secondary checks (onset-window subtropical jet, contemporaneous domain
+  jet speed, contemporaneous CA-box Z300), against the full event record instead of 4
+  cases. Five predictors x two variables = 10 pre-registered tests. **Status: finished
+  -- the first real (non-null) signal in this investigation, with an important caveat.**
+  Four of the five predictors turn out to be highly intercorrelated (Spearman |rho| up
+  to 0.83) -- not independent confirmations, but one underlying "jet/trough state"
+  measured four ways. For T700 it's robust even under a rough Bonferroni correction:
+  precursor NW-Pac Z300 rho=-0.50 (p=0.0005), event-mean domain jet speed rho=0.43
+  (p=0.0024) -- a *stronger* jet / *troughier* (not ridgier) NW-Pacific precursor
+  predicts *longer* persistence. Z500 shows the same direction but weaker (p=0.07-0.15).
+  Local CA-box Z300 (the one independent predictor) stays null, consistent with every
+  intensity-vs-duration test elsewhere in this project. Two things keep this honest
+  rather than a clean win: the sign is opposite both Davis's precursor-ridging framing
+  and the informal "weak jet lets blocking persist" read of the n=4 case study; and it
+  does not explain March 2026 itself -- March's own jet speed (26.8 m/s) sits at the
+  31st percentile of the 48-event distribution (below average), yet March set the
+  all-time duration record by a wide margin over the previous record (12 days, which
+  did have an above-median jet, consistent with the general relationship). Real at the
+  population level, but March is an outlier with respect to it, not a confirming case.
 
 ## Method A vs. Method C: cross-cutting comparison
 
