@@ -16,20 +16,42 @@ from scipy.stats import linregress, theilslopes
 # Climatology
 # ---------------------------------------------------------------------------
 
+def _doy_positions(time_index):
+    """Map each date's (month, day) to a position on a fixed 366-day calendar circle
+    (using leap-year 2000 as the reference so Feb 29 gets a stable position), plus
+    the per-unique-key lookup used to center a pooling window on it.
+
+    A naive sorted-(month, day) index -- e.g. Jan 1 = 0, ..., Dec 31 = 364/365 --
+    treats the calendar as a LINE: pooling +/-window around Jan 1 then only reaches
+    forward into January, never back into the preceding December, even though Dec 31
+    and Jan 1 are one calendar day apart. Returning a circular day-of-year position
+    instead lets every caller below pool by circular distance, which is correct
+    whether or not the input happens to span a Dec->Jan boundary -- so there's
+    nothing for a caller to opt in or out of.
+    """
+    time_index = pd.DatetimeIndex(time_index)
+    md_key = list(zip(time_index.month, time_index.day))
+    unique_keys = sorted(set(md_key))
+    doy_map = {k: pd.Timestamp(2000, k[0], k[1]).dayofyear for k in unique_keys}
+    doy = np.array([doy_map[k] for k in md_key])
+    return doy, doy_map
+
+
+def _circular_pool_mask(doy, center_doy, window, cycle=366):
+    diff = np.abs(doy - center_doy)
+    return np.minimum(diff, cycle - diff) <= window
+
+
 def climatology_dict(time_index, vals, window=5, compute_std=True, min_samples=1,
-                      dropna=False, check_wraparound=True):
+                      dropna=False):
     """Per-calendar-day mean (and optionally std), pooling +/-window days across all
     years, keyed by (month, day). Works on any 1-D series passed in -- a series of
     daily values or a series of 5-day running means, whichever `vals` holds.
 
-    Pools by sorted-(month, day) index proximity, so it does NOT handle a Dec->Jan
-    wraparound correctly -- near Jan 1 / Dec 31 the pooling window silently becomes
-    asymmetric (e.g. Jan 1's window only reaches forward into January, not back into
-    the preceding December) rather than raising or fixing itself. `check_wraparound`
-    raises instead of silently producing that asymmetric window; set it False only if
-    the caller already knows about and accepts that imprecision for a season that
-    must span the new year (e.g. an Oct-May water year), rather than as a way to paper
-    over the issue for data that could just as easily be restricted to a safe range.
+    Pools by circular day-of-year distance (see `_doy_positions`), so a window
+    spanning the Dec->Jan boundary (e.g. an Oct-May water year) is handled correctly
+    automatically -- Jan 1's window reaches back into the preceding December exactly
+    as far as it reaches forward into January, with no separate opt-in required.
 
     dropna=True drops NaNs from each pooled window before computing (and, combined
     with min_samples, returns NaN for a calendar day with too few valid pooled values)
@@ -38,37 +60,30 @@ def climatology_dict(time_index, vals, window=5, compute_std=True, min_samples=1
     function was first written for, where the defaults (dropna=False, min_samples=1)
     are always correct and unaffected by this option.
     """
-    time_index = pd.DatetimeIndex(time_index)
-    months = set(time_index.month)
-    if check_wraparound and 12 in months and 1 in months:
-        raise ValueError(
-            'climatology_dict pools by sorted (month, day) index proximity and does '
-            'not handle a Dec->Jan wraparound, but time_index spans both December '
-            'and January. Restrict the input to a non-wrapping season first, or pass '
-            'check_wraparound=False to accept the resulting asymmetric pooling window.'
-        )
-
-    md_key = list(zip(time_index.month, time_index.day))
-    unique_keys = sorted(set(md_key))
-    key_to_idx = {k: i for i, k in enumerate(unique_keys)}
-    season_idx = np.array([key_to_idx[k] for k in md_key])
+    doy, doy_map = _doy_positions(time_index)
     clim_mean, clim_std = {}, {}
-    for k, idx in key_to_idx.items():
-        mask = (season_idx >= idx - window) & (season_idx <= idx + window)
+    for k, center in doy_map.items():
+        mask = _circular_pool_mask(doy, center, window)
         pool = vals[mask]
         if dropna:
             pool = pool[~np.isnan(pool)]
-            # pool.std() == 0 is too strict a check here: a near-but-not-quite-constant
-            # pool (e.g. float roundoff on repeated sensor readings) can land at
-            # std ~1e-14 rather than exactly 0, sails past an exact-equality guard, and
-            # then blows up downstream when something divides by it. Caught via a
-            # WINDOW=1 run where one station's pooled SWE-diff std was 5.7e-14 -- not
-            # zero, but not a real, usable climatological spread either.
-            if len(pool) < min_samples or (compute_std and pool.std() < 1e-6):
+            if len(pool) < min_samples:
                 clim_mean[k] = np.nan
                 if compute_std:
                     clim_std[k] = np.nan
                 continue
+        # pool.std() == 0 is too strict a check here: a near-but-not-quite-constant
+        # pool (e.g. float roundoff on repeated sensor readings) can land at
+        # std ~1e-14 rather than exactly 0, sails past an exact-equality guard, and
+        # then blows up downstream when something divides by it. Caught via a
+        # WINDOW=1 run where one station's pooled SWE-diff std was 5.7e-14 -- not
+        # zero, but not a real, usable climatological spread either. Runs regardless
+        # of dropna: standardize_with_trend's dense, gap-free callers hit the same
+        # degenerate-pool case and never pass dropna=True.
+        if compute_std and pool.std() < 1e-6:
+            clim_mean[k] = np.nan
+            clim_std[k] = np.nan
+            continue
         clim_mean[k] = pool.mean(axis=0)
         if compute_std:
             clim_std[k] = pool.std(axis=0)
@@ -87,15 +102,14 @@ def percentile_climatology(time_index, vals, window=5, percentiles=(90, 95, 99))
     years -- an alternative to a parametric sigma threshold that makes no assumption
     about the tail shape of the pooled distribution (relevant here since CA Z500/T700
     anomalies are measurably skewed, not symmetric).
+
+    Pools by circular day-of-year distance (see `_doy_positions`), same as
+    `climatology_dict`, so a Dec->Jan-spanning input is handled correctly.
     """
-    time_index = pd.DatetimeIndex(time_index)
-    md_key = list(zip(time_index.month, time_index.day))
-    unique_keys = sorted(set(md_key))
-    key_to_idx = {k: i for i, k in enumerate(unique_keys)}
-    season_idx = np.array([key_to_idx[k] for k in md_key])
+    doy, doy_map = _doy_positions(time_index)
     result = {p: {} for p in percentiles}
-    for k, idx in key_to_idx.items():
-        mask = (season_idx >= idx - window) & (season_idx <= idx + window)
+    for k, center in doy_map.items():
+        mask = _circular_pool_mask(doy, center, window)
         pooled = vals[mask]
         for p in percentiles:
             result[p][k] = np.percentile(pooled, p)
@@ -465,13 +479,12 @@ def _self_test():
     assert set(clim_mean.keys()) == set(clim_std.keys())
     assert all(s >= 0 for s in clim_std.values())
 
-    # wraparound guard must reject a Dec->Jan span
-    bad_index = pd.date_range('2000-12-01', '2001-01-31')
-    try:
-        climatology_dict(bad_index, np.zeros(len(bad_index)))
-        raise AssertionError('expected ValueError for Dec->Jan wraparound input')
-    except ValueError:
-        pass
+    # a Dec->Jan-spanning index must not raise or error -- pooling handles it via
+    # circular day-of-year distance (see the dedicated wraparound-correctness check
+    # further down, which verifies the pooled values themselves, not just that this
+    # doesn't crash)
+    wrap_index = pd.date_range('2000-12-01', '2001-01-31')
+    climatology_dict(wrap_index, np.zeros(len(wrap_index)))
 
     # standardize_with_trend: a known year-trend plus Gaussian noise (no seasonal
     # cycle, so climatology pooling doesn't itself add dispersion) should recover
@@ -579,11 +592,21 @@ def _self_test():
     m_nc, s_nc = climatology_dict(time_index, near_const_vals, window=5, dropna=True, min_samples=10)
     assert all(np.isnan(v) for v in s_nc.values()), 'near-constant pooled std should be flagged as degenerate'
 
-    # climatology_dict: check_wraparound=False must allow a Dec->Jan-spanning index
-    # that check_wraparound=True (the default) correctly rejects
-    wrap_dates = pd.date_range('2000-11-01', '2001-02-28')
-    wrap_vals = rng.normal(0, 1, len(wrap_dates))
-    climatology_dict(wrap_dates, wrap_vals, window=5, check_wraparound=False)  # must not raise
+    # climatology_dict: pooling must wrap correctly across the Dec->Jan boundary
+    # (e.g. an Oct-May water year) instead of silently only reaching one direction.
+    wrap_dates = pd.date_range('1999-11-01', '2002-02-28', freq='D')
+    wrap_vals = np.zeros(len(wrap_dates))
+    wrap_vals[np.isin(wrap_dates.strftime('%m-%d'), ['12-29', '12-30', '12-31'])] = 100.0
+    clim_wrap = climatology_dict(wrap_dates, wrap_vals, window=3, compute_std=False)
+    assert clim_wrap[(1, 1)] > 0, (
+        "Jan 1's +/-3-day pool should wrap back into the preceding Dec 29-31 and see "
+        'the nonzero values there, not just forward into January'
+    )
+    assert clim_wrap[(1, 10)] == 0, 'Jan 10 is outside the wraparound window and should see none of the Dec spike'
+    assert clim_wrap[(12, 31)] > clim_wrap[(12, 20)], (
+        "Dec 31's own pool (its neighboring Dec 29/30 and wrapped Jan 1/2/3) should be "
+        'pulled toward the Dec spike, higher than a December day far from the boundary'
+    )
 
     # event_days / overlapping_pairs: a 5-day event should contribute exactly 5 days,
     # and an overlapping pair should report the correct onset lag

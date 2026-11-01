@@ -56,9 +56,29 @@ This README is an orientation map, not a substitute for it.
   Includes face validity, elevation-representativeness, heat-wave match-rate,
   dry/wet rain-on-snow classification (with a station-precipitation cross-check on
   the ERA5-based call), recovery analysis, and a 2026 out-of-sample score.
+  **Data-quality note (2026-10-31):** the station precipitation cross-check's CDEC
+  feed has a real, only partially correctable issue -- see `get_station_precip_box.py`
+  -- where some stations' raw telemetry "pegs" at suspiciously round values (e.g.
+  exactly 5.0 in recurs 76 times across unrelated stations/dates); a plausibility
+  filter now removes the most extreme corruption (values up to several meters/day),
+  but subtler round-value artifacts remain undistinguishable from genuine extremes.
+  Section 5c's cross-check numbers were revised accordingly (Spearman rho 0.44, not
+  the earlier ~0.5; 3 of 45 "dry" events now show a reverse disagreement against
+  station gauges, not zero) -- see the notebook's own Section 5c conclusion for the
+  full caveat.
 - **`CA_snowmelt_methodC_5daymean_std.ipynb`** -- snow-side analog of the atmospheric
   Method C notebook, same 5-day-mean-std event definition applied to the network
-  decline fraction, as a robustness check.
+  decline fraction, as a robustness check. **Numbers revised (2026-10-31):** its
+  climatology/trend fit wasn't actually restricted to the 1990-2025 fit years the way
+  the per-station layer above it was, letting WY2026 leak into the "frozen" baseline
+  despite the notebook's own `YEARS` comment saying it was excluded (`ca_blocking_lib.py`
+  bugfix, see commit history). Correcting that moved the headline Method C counts from
+  122/56/26 to **127/64/31** (1/2/3 sigma) and the "5-day-mean narrower than daily"
+  bootstrap result from 17.6% to **19.2%** (90% CI [17.9%, 20.7%]); the real-Method-A
+  match rate against Method C also shifted from 55/58 (95%) to 57/58 (98%). All
+  qualitative conclusions are unchanged -- Method C is still a ~5x looser event-counting
+  method than its matched control and still not defensible as a sigma-based ranking
+  method -- only the specific numbers moved.
 - **`CA_methodA_vs_methodC_match_permutation_test.ipynb`** -- standalone permutation/
   null test asking whether Method C's much higher heat-wave match rate (93% vs. Method
   A's 61%) is mostly base-rate inflation from its larger event list, or genuine excess

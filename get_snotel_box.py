@@ -37,7 +37,7 @@ LON_E = SIERRA_LON_E - 360.0
 # 2026 out-of-sample convention, but extended to Oct-Jul (see get_snotel_ca.py)
 # since melt-out and any post-melt recovery mostly happen after April.
 BEGIN_DATE = '1989-10-01'
-END_DATE = '2026-05-31'
+END_DATE = '2026-07-31'
 
 IN_MM = 25.4  # SNOTEL WTEQ is reported in inches; 1 in = 25.4 mm
 
