@@ -7,9 +7,58 @@ picked up by every notebook that imports from here, instead of silently drifting
 across copy-pasted cells.
 """
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
+import xarray as xr
 from scipy.stats import linregress, theilslopes
+
+
+# ---------------------------------------------------------------------------
+# Data loading
+# ---------------------------------------------------------------------------
+
+def open_yearly_dataset(files, missing_hint=''):
+    """Check that every per-year file exists (raising a readable FileNotFoundError
+    naming the first few missing ones, with an optional hint for how to produce them,
+    rather than letting xr.open_mfdataset fail on a missing file with a much less
+    legible error), then open it/them. Uses open_dataset for a single file and
+    open_mfdataset for more than one, both with engine='netcdf4' to skip xarray's
+    guess-the-backend step (which otherwise imports every installed xarray backend,
+    including metpy -> cartopy -> fiona, just to pick the one actually needed).
+    """
+    files = [str(f) for f in files]
+    missing = [f for f in files if not Path(f).exists()]
+    if missing:
+        hint = f'\n{missing_hint}' if missing_hint else ''
+        raise FileNotFoundError(
+            f'{len(missing)} file(s) missing: {[Path(f).name for f in missing[:5]]}...{hint}'
+        )
+    if len(files) > 1:
+        return xr.open_mfdataset(files, combine='by_coords', engine='netcdf4')
+    return xr.open_dataset(files[0], engine='netcdf4')
+
+
+def box_average_df(ds, variables, lat_slice=None, lon_slice=None, months=(1, 2, 3, 4)):
+    """Cosine-latitude-weighted box average of each variable in `ds` over
+    (optionally sub-box-sliced) latitude/longitude, as a month-filtered daily
+    DataFrame indexed by time -- the box-average-then-to-DataFrame-then-month-filter
+    pattern repeated for the CA box, the Sierra sub-box, and every out-of-sample year
+    across the CA blocking-event notebooks.
+    """
+    if lat_slice is not None or lon_slice is not None:
+        sel = {}
+        if lat_slice is not None:
+            sel['latitude'] = lat_slice
+        if lon_slice is not None:
+            sel['longitude'] = lon_slice
+        ds = ds.sel(**sel)
+    weights = np.cos(np.deg2rad(ds.latitude))
+    data = {v: ds[v].weighted(weights).mean(dim=('latitude', 'longitude')).compute().values
+            for v in variables}
+    df = pd.DataFrame(data, index=pd.to_datetime(ds.time.values)).sort_index()
+    return df[df.index.month.isin(months)]
 
 
 # ---------------------------------------------------------------------------
@@ -334,6 +383,29 @@ def find_events(dates, sanom, threshold, min_duration, sign=1, max_gap=1):
     return pd.DataFrame(records, columns=columns)
 
 
+def build_events_table(dates, sanom_by_label, thresholds, min_duration, sign=1, max_gap=1):
+    """Run find_events() for every (label, threshold) combination and concatenate into
+    one events table, sorted by variable/threshold_sd/start_date -- the detect-every-
+    threshold-for-every-variable loop repeated verbatim across every section of the CA
+    blocking-event notebooks (main box, sub-box, out-of-sample year, pre-detrend
+    comparison). Drops `second_peak_sanom` (unused by any of those call sites).
+
+    `sanom_by_label` maps the public variable label (e.g. '500 hPa height (ridging)')
+    to its standardized-anomaly array, both aligned to `dates`.
+    """
+    all_events = []
+    for label, sanom in sanom_by_label.items():
+        for thr in thresholds:
+            ev = find_events(dates, sanom, threshold=thr, min_duration=min_duration,
+                              sign=sign, max_gap=max_gap)
+            ev = ev.drop(columns='second_peak_sanom')
+            ev.insert(0, 'threshold_sd', thr)
+            ev.insert(0, 'variable', label)
+            all_events.append(ev)
+    events_df = pd.concat(all_events, ignore_index=True)
+    return events_df.sort_values(['variable', 'threshold_sd', 'start_date']).reset_index(drop=True)
+
+
 def extremal_index_runs(dates, exceed_bool, max_gaps=(0, 1, 2, 3)):
     """Runs-estimator of the extremal index theta = n_clusters / n_exceedance_days
     for a range of declustering gap tolerances -- lets a MAX_GAP choice be justified
@@ -390,27 +462,42 @@ def event_days(events_df):
     return days
 
 
-def overlapping_pairs(a, b, a_prefix='a', b_prefix='b'):
+def overlapping_pairs(a, b, a_prefix='a', b_prefix='b', include_overlap_days=False,
+                       return_b_unmatched=False):
     """Pair each row of `a` with every temporally-overlapping row of `b` (inclusive
     start_date/end_date ranges). Returns (pairs_df, a_unmatched): pairs_df has one row
     per overlapping (a, b) pair with `<a_prefix>_start`/`<a_prefix>_end`/
     `<b_prefix>_start`/`<b_prefix>_end`/`lag_days` columns (lag_days = a.start_date -
     b.start_date, positive meaning a starts after b), and a_unmatched is the subset of
     `a` with no overlapping `b` row at all.
+
+    Set `include_overlap_days=True` to add an `overlap_days` column (the date-range
+    intersection length) to `pairs_df`. Set `return_b_unmatched=True` to additionally
+    get the subset of `b` with no overlapping `a` row, as a 3-tuple
+    (pairs_df, a_unmatched, b_unmatched), for callers that need unmatched rows on both
+    sides rather than just `a`'s.
     """
-    pairs, matched_a = [], set()
+    pairs, matched_a, matched_b = [], set(), set()
     for ia, arow in a.iterrows():
         for ib, brow in b.iterrows():
             lo = max(arow.start_date, brow.start_date)
             hi = min(arow.end_date, brow.end_date)
             if lo <= hi:
                 matched_a.add(ia)
-                pairs.append({
+                matched_b.add(ib)
+                pair = {
                     f'{a_prefix}_start': arow.start_date, f'{a_prefix}_end': arow.end_date,
                     f'{b_prefix}_start': brow.start_date, f'{b_prefix}_end': brow.end_date,
                     'lag_days': (arow.start_date - brow.start_date).days,
-                })
-    return pd.DataFrame(pairs), a.loc[~a.index.isin(matched_a)]
+                }
+                if include_overlap_days:
+                    pair['overlap_days'] = (hi - lo).days + 1
+                pairs.append(pair)
+    pairs_df = pd.DataFrame(pairs)
+    a_unmatched = a.loc[~a.index.isin(matched_a)]
+    if return_b_unmatched:
+        return pairs_df, a_unmatched, b.loc[~b.index.isin(matched_b)]
+    return pairs_df, a_unmatched
 
 
 # ---------------------------------------------------------------------------
@@ -616,6 +703,47 @@ def _self_test():
     pairs, unmatched = overlapping_pairs(ev_a, ev_b)
     assert len(pairs) == 1 and len(unmatched) == 0
     assert pairs.loc[0, 'lag_days'] == (dates[0].date() - dates[2].date()).days
+
+    # overlapping_pairs: include_overlap_days/return_b_unmatched are additive --
+    # default call above must be unaffected, and the new fields must be correct
+    # (ev_a = dates[0..4], ev_b = dates[2..6] -> 3-day intersection, dates[2..4])
+    pairs2, a_unm2, b_unm2 = overlapping_pairs(ev_a, ev_b, include_overlap_days=True,
+                                                 return_b_unmatched=True)
+    assert pairs2.loc[0, 'overlap_days'] == 3
+    assert len(a_unm2) == 0 and len(b_unm2) == 0
+    ev_c = pd.DataFrame({'start_date': [dates[10].date()], 'end_date': [dates[12].date()]})
+    pairs3, a_unm3, b_unm3 = overlapping_pairs(ev_a, pd.concat([ev_b, ev_c], ignore_index=True),
+                                                 return_b_unmatched=True)
+    assert len(pairs3) == 1 and len(a_unm3) == 0 and len(b_unm3) == 1, (
+        'ev_c has no overlap with ev_a and should show up as an unmatched b row'
+    )
+
+    # build_events_table: should reproduce find_events() called by hand for every
+    # (label, threshold) pair, in sorted order, with second_peak_sanom dropped
+    sanom_by_label = {'x': sig, 'y': sig_gap1}
+    table = build_events_table(dates[:n], sanom_by_label, thresholds=[1, 100], min_duration=1,
+                                sign=1, max_gap=1)
+    assert 'second_peak_sanom' not in table.columns
+    assert len(table[(table.variable == 'x') & (table.threshold_sd == 1)]) == 1
+    assert len(table[(table.variable == 'y') & (table.threshold_sd == 1)]) == 1
+    assert len(table[table.threshold_sd == 100]) == 0
+    assert list(table.columns[:2]) == ['variable', 'threshold_sd']
+
+    # box_average_df: a uniform field's cosine-weighted mean should equal that
+    # constant regardless of latitude weighting, and the month filter should drop
+    # days outside `months`
+    grid_dates = pd.date_range('2000-01-01', '2000-05-31', freq='D')
+    lat = np.linspace(30, 40, 5)
+    lon = np.linspace(-120, -110, 4)
+    const_val = 7.0
+    ds_test = xr.Dataset(
+        {'v': (('time', 'latitude', 'longitude'),
+               np.full((len(grid_dates), len(lat), len(lon)), const_val))},
+        coords={'time': grid_dates, 'latitude': lat, 'longitude': lon},
+    )
+    df_box = box_average_df(ds_test, ['v'], months=(1, 2, 3, 4))
+    assert np.allclose(df_box['v'], const_val)
+    assert df_box.index.month.isin([1, 2, 3, 4]).all() and not (df_box.index.month == 5).any()
 
     # boot_ci_proportion: CI of an all-True array should be exactly [100, 100]
     lo_p, hi_p = boot_ci_proportion(np.ones(20, dtype=bool), n_boot=100, rng=rng)
