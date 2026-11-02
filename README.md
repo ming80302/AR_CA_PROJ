@@ -279,8 +279,9 @@ Section 8's own numbers.
   wider NW-Pac-to-CA path mean, fraction of event-days convergent) against the full
   47-48-event record. Weak-wind mask tightened (2 to 3 m/s) plus a new outlier backstop
   per the n=4 notebook's own flagged caveat -- confirmed to exclude only ~4.5 extra grid
-  points/day, a handful-scale correction. **Status: finished, sixth null/non-explanatory
-  result.** Z500 duration shows no relationship to any of the three WAF predictors
+  points/day, a handful-scale correction. **Status: finished, sixth (and, extended
+  below, seventh) null/non-explanatory result.** Z500 duration shows no relationship to
+  any of the three WAF predictors
   (p=0.46-0.75). T700 shows a weak, nominally significant but Bonferroni-uncorrected
   relationship (path-mean convergence rho=-0.31 p=0.032, fraction convergent rho=-0.32
   p=0.027) -- and it's reversed from Davis's "reinforced by impinging eddies" framing:
@@ -292,6 +293,22 @@ Section 8's own numbers.
   relationship. Flags a possible, untested connection to the jet/trough finding above
   (a troughier precursor could be a wave-energy source rather than a local convergence
   zone) as a loose end for future work, not a resolved synthesis.
+  **Extended (2026-11-02): repeated reinforcement vs. a single decaying trigger.**
+  Section 4/5 only tested time-*averaged* convergence; a new Section 7 asks whether a
+  long episode is long because it gets re-forced partway through (several discrete
+  pulses) rather than triggered once and decaying, using the same daily series already
+  computed (no new data). Predictors are rate/fraction-based specifically to avoid the
+  tautology that a longer event mechanically fits more raw pulse counts. Also null for
+  Z500 (p=0.23, p=0.94) and only marginal-and-reversed for T700 (pulse rate rho=-0.29
+  p=0.052, second-half-convergent fraction rho=-0.29 p=0.051 -- *more* frequent/
+  sustained pulses go with *shorter* T700 persistence, not longer) -- weaker than the
+  time-mean result, same direction, not an independent confirmation. March's 19-day
+  sequence shows 5 distinct pulses (more than any WY2026 sibling in raw count) but its
+  rate-normalized pulse rate (69th percentile) and second-half-convergent fraction
+  (63rd percentile, *lower* than the short Late Jan/Feb episode's 85th) are both
+  unremarkable -- the "recharging" hypothesis is now also closed out as a seventh
+  null/non-explanatory result, cheap to test and worth ruling out rather than leaving
+  open.
 - **`CA_ridging_persistence_background_state.ipynb`** -- *motivation:* every notebook
   above tests an instantaneous precursor or contemporaneous field; none test
   *background* conditions -- the slower large-scale state an episode happens to occur
@@ -313,6 +330,33 @@ Section 8's own numbers.
   active/inactive split, p=0.32-0.67), and March's own mean OMI amplitude (1.02,
   range 0.91-1.07, 63% of days "active") is a weak but not clearly inactive signal --
   a direct, mild correction to the qualitative claim that motivated this check.
+- **`CA_ridging_persistence_season_clustering.ipynb`** -- *motivation:* every notebook
+  above treats the *episode* as the unit of analysis -- what made March's 19 days long.
+  A different framing: WY2026 had four Z500 episodes packed into a 79-day span with
+  gaps of only 11, 18, and 10 days -- maybe the anomaly is the *season* regenerating
+  ridges faster than normal (no recovery window), not one episode's internal dynamics.
+  Tests episode count, total days-in-episode, and inter-episode gaps at the season
+  level (one row per water year) against the 1990-2025 record, and whether season-mean
+  ENSO/PDO predict clustering specifically (not just single-episode duration). No new
+  fetch. **Status: finished -- the clearest, least caveated finding in the mechanism
+  thread, but still doesn't explain 2026 itself.** 2026 is the literal record-holder
+  (100th percentile of 36 fit-period seasons) on every season-coverage metric for both
+  Z500 and T700: 4 episodes, 43-46 total episode-days, 36-38% of the whole Jan-Apr
+  season spent in an active episode -- more than any prior year on every measure
+  simultaneously, not an outlier on just one axis. Its inter-episode gaps sit in the
+  tight tail (Z500: 12th percentile of 16 multi-episode seasons; T700: 6th-11th
+  percentile of 18), confirming "no chance to recover" quantitatively. Season-mean
+  ENSO/PDO show a real, coherent (same direction as the single-episode PDO result)
+  relationship to gap tightness specifically -- T700 min-gap vs. ENSO rho=-0.61
+  (p=0.0078, n=18), vs. PDO rho=-0.48 (p=0.042, n=18); Z500 weaker (p=0.06-0.09) --
+  though none clear a 12-test Bonferroni bar and the multi-episode-season sample is
+  small. Episode count/total days show no ENSO/PDO relationship at all (p=0.15-0.93) --
+  background state, if it matters, acts on spacing, not overall frequency. But 2026's
+  own season-mean ONI (-0.01) is almost exactly neutral, not the El-Nino-like state
+  that would predict tight clustering, and PDO can't be checked (no 2026 data) -- so
+  even this relationship fails to explain 2026's own record-breaking clustering. Across
+  eight notebooks and roughly a dozen hypotheses, this sharpens *what* needs explaining
+  (season-long regeneration, not single-episode decay) without yet explaining it.
 
 ## Method A vs. Method C: cross-cutting comparison
 
