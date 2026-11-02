@@ -411,6 +411,35 @@ Section 8's own numbers.
   amplification, at least in this regional-proxy form, joins the list of mechanisms
   that do not explain March; a genuine global-wavenumber test remains a real, uncosted
   option for ruling out the formal version of the theory.
+- **`CA_ridging_persistence_gap_trough_depth.ipynb`** -- *motivation:* a specific
+  refinement of a proposed hypothesis ("repeated ridge development plus insufficient
+  intervening trough passage matters more than individual-ridge intensity") whose
+  other two claims were already established -- repeated development is real and
+  record-breaking (`CA_ridging_persistence_season_clustering.ipynb`), intensity is null
+  (`CA_ridging_persistence_drivers.ipynb`). The third claim was never actually tested:
+  the clustering notebook measured gap *length* only, not whether the circulation ever
+  reached genuine trough conditions during those gaps. Builds two gap-depth metrics
+  (minimum standardized anomaly reached in the gap; fraction of gap-days at or below
+  -1 sigma, symmetric to the ridge-detection threshold) from the standardized Z500/T700
+  series already used throughout this project -- no new fetch. **Status: finished --
+  the first mechanism in this thread where March's own case supports, rather than
+  contradicts, the pattern, though the statistical backing is suggestive, not
+  confirmed.** Event-level: gap minimum anomaly predicts the *following* episode's
+  duration for Z500 (rho=0.51, p=0.025, n=19) in the hypothesized direction (shallower
+  trough -> longer episode); T700 weaker, not significant (rho=0.34, p=0.156). Doesn't
+  clear a 4-test Bonferroni bar (p<0.0125). Season-level test (season's weakest trough
+  vs. total season episode-days): consistent direction for Z500 (p=0.12-0.24, not
+  significant) but T700's fraction-based metric is wrong-signed (rho=+0.21) -- not a
+  clean cross-variable confirmation. **But WY2026's own three gaps illustrate the
+  hypothesis cleanly:** two of three never reached -1 sigma at all, and the gap
+  immediately preceding March (Mar 2-10) was the *shallowest of WY2026's own three
+  gaps* (min_sanom=-0.16, 95th percentile shallow) -- immediately followed by the
+  19-day record episode. Every prior mechanism in this thread (jet speed, WAF
+  convergence/pulses, antecedent snowpack, QRA amplitude/phase/waveguide) had March as
+  an outlier *against* its own relationship; this is the first where March's case
+  aligns with it. Flagged explicitly as a lead worth a larger/more rigorous follow-up
+  (n=19 is small, doesn't survive correction, T700 doesn't confirm), not a settled
+  explanation -- but the most promising candidate this mechanism thread has produced.
 
 ## Method A vs. Method C: cross-cutting comparison
 
