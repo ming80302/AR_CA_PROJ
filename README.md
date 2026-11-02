@@ -440,6 +440,27 @@ Section 8's own numbers.
   aligns with it. Flagged explicitly as a lead worth a larger/more rigorous follow-up
   (n=19 is small, doesn't survive correction, T700 doesn't confirm), not a settled
   explanation -- but the most promising candidate this mechanism thread has produced.
+- **`CA_ridging_persistence_central_pacific_template.ipynb`** -- *motivation:* did
+  WY2026's four episodes share a recurring central-Pacific precursor disturbance (a
+  "stuck" pattern regenerating similar ridges), or were they four independently
+  different-looking triggers that happened to produce similar outcomes? Earlier
+  precursor tests only ever used box-mean scalars; this is the first to compare
+  precursor *spatial patterns* directly. Uses a standard central-Pacific box
+  (160-220E, 20-40N, distinct from Davis's NW-Pacific omega-block box) from data
+  already in hand, Z500 episodes only. **Status: finished -- a field-dependent split.**
+  Z300 (dynamical disturbance shape): WY2026's four precursor maps are **not** more
+  similar to each other than chance -- mean pairwise correlation -0.07, 25th percentile
+  of a 2000-draw bootstrap null from the 47-event fit-period record (mean 0.094) --
+  if anything slightly *less* similar than a random historical set. IVT (moisture-
+  plume shape): WY2026's four precursor maps **are** more similar than typical -- mean
+  pairwise correlation 0.24, 91st percentile of the same null (suggestive, one-sided
+  empirical p~0.09, not strict significance at n=4). Physical reading offered
+  carefully: the upper-level wave shape differed each time, but the moisture pathway
+  feeding each new disturbance was unusually consistent -- closer to Davis's "Anti-AR"
+  moisture-stream framing than a literal repeating wave template. Speculatively
+  connects to `CA_ridging_persistence_gap_trough_depth.ipynb`'s shallow-trough finding
+  as two independent signatures of the same idea (the background state staying fixed
+  rather than resetting between episodes) -- not tested jointly, a real next step.
 
 ## Method A vs. Method C: cross-cutting comparison
 
