@@ -292,6 +292,27 @@ Section 8's own numbers.
   relationship. Flags a possible, untested connection to the jet/trough finding above
   (a troughier precursor could be a wave-energy source rather than a local convergence
   zone) as a loose end for future work, not a resolved synthesis.
+- **`CA_ridging_persistence_background_state.ipynb`** -- *motivation:* every notebook
+  above tests an instantaneous precursor or contemporaneous field; none test
+  *background* conditions -- the slower large-scale state an episode happens to occur
+  within. Davis flags "an inactive MJO" for March 2026 as a single-case observation;
+  ENSO and PDO were never tested at all. First use of non-ERA5, non-station data in
+  this project (`get_mjo_enso_pdo_indices.py` fetches public NOAA ONI/PDO/OMI indices).
+  **Status: finished -- the strongest statistical result in the mechanism thread, and
+  the first one that can't be checked against March at all.** PDO event-mean rho=0.46
+  (p=0.0009, n=48) clears a 6-test Bonferroni bar (p<0.0083) with room to spare -- a
+  warm PDO phase predicts longer Z500 ridging persistence specifically (T700: rho=0.17,
+  not significant) -- physically plausible given the literature's association of
+  warm-PDO/El-Nino-like regimes with persistent West Coast ridging (e.g. 2013-2015's
+  "Ridiculously Resilient Ridge"). But NOAA's PDO series currently ends August 2025 --
+  there is no 2026 value, so this one Bonferroni-robust predictor cannot be evaluated
+  for March 2026 itself; not a null result, a data-availability gap. ENSO (ONI) is
+  nominally significant for Z500 (rho=0.34, p=0.018) but does not survive correction,
+  and March's own ONI (0.11, ENSO-neutral) sits at exactly the 50th percentile -- dead
+  center, not an outlier. MJO shows no relationship to duration at all (continuous or
+  active/inactive split, p=0.32-0.67), and March's own mean OMI amplitude (1.02,
+  range 0.91-1.07, 63% of days "active") is a weak but not clearly inactive signal --
+  a direct, mild correction to the qualitative claim that motivated this check.
 
 ## Method A vs. Method C: cross-cutting comparison
 
@@ -422,6 +443,7 @@ summary:
 | `get_upstream_pacific.py` | ERA5 pressure levels + surface + vertically-integrated | `upstream_pacific_<year>.nc` (Z300, U300, V300, MSLP, SST, cloud cover, IVT components) over a wide Pacific-North America domain, for the mechanism composite notebook |
 | `get_upstream_pv_theta.py` | ERA5 pressure levels | `upstream_pv_theta_<year>.nc` (PV, T, U, V on an 11-level 500-50 hPa bracket), for locating the dynamic tropopause |
 | `get_t2m_sierra.py` | ERA5 surface | `t2m_sierra_<year>.nc` (Sierra-box 2m temperature, 1990-2026), for the Guo-and-He-style local-heatwave comparison (`CA_t2m_local_heatwave_vs_snowmelt.ipynb`) |
+| `get_mjo_enso_pdo_indices.py` | NOAA PSL (public, no ERA5/station data) | `oni_index.csv`, `pdo_index.csv`, `omi_index.csv` -- ENSO/PDO/MJO background-state indices, for `CA_ridging_persistence_background_state.ipynb` |
 
 `job_array_get_z500_t700_ca.pbs` / `job_array_get_precip_sf_ca.pbs` run the two ERA5
 fetch scripts as PBS job arrays (one task per water year) on Casper.
