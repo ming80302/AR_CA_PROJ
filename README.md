@@ -382,6 +382,35 @@ Section 8's own numbers.
   same PDO/ENSO background state already implicated elsewhere rather than a causal
   effect of snow abundance itself. Sets aside this specific (depletion-priming) form
   of land-atmosphere feedback as an explanation for March.
+- **`CA_ridging_persistence_quasi_resonance.ipynb`** -- *motivation:* tests quasi-
+  resonant amplification (QRA; Petoukhov et al. 2013, Coumou et al. 2014) -- a
+  specific, formal mechanism distinct from two prior null results that sound similar:
+  not discrete reinforcement pulses (`CA_ridging_persistence_drivers_waf.ipynb`), not
+  whole-field phase speed (`CA_2026_dynamic_tropopause_diagnosis.ipynb`), but whether a
+  particular large-scale wave gets trapped by a waveguide (a double jet) and amplifies
+  in place with near-zero *wave-specific* phase speed. **Two real limitations stated up
+  front:** this project's upstream field is regional (~110 degrees of longitude, ~30%
+  of a full latitude circle), not global, so a true wavenumber-6-to-8 decomposition
+  isn't possible -- this notebook fits a single dominant large-scale harmonic across
+  the available sector instead, an honestly-labeled proxy, not a genuine wavenumber
+  attribution; and it uses fixed-pressure Z300 (matching the WAF/jet notebooks and the
+  QRA literature's own convention) rather than the dynamic tropopause, which gets it a
+  real full-record test instead of the DT notebook's unavoidable n=1. **Status:
+  finished -- March scores at the wrong end of every proxy measure tested.** Population
+  relationships are weak and mixed: wave amplitude nominally positive for T700 only
+  (rho=0.32, p=0.028, null for Z500), |phase speed| QRA-consistent in direction for
+  both variables but not significant (p=0.21, p=0.43), and the jet double-core
+  (waveguide) ratio -- the actual precondition QRA depends on -- nominally significant
+  for Z500 but **backwards** (rho=-0.34, p=0.020: more double-jet structure predicts
+  *shorter* persistence). None of six tests clears a Bonferroni bar. March itself: 8th
+  percentile wave amplitude (one of the *least* amplified large-scale waves in 36
+  years), 79th percentile |phase speed| (faster, not stationary), and the single
+  highest double-jet ratio in the entire record (100th percentile) -- which, given that
+  metric's negative population relationship, makes March's record duration a second-
+  order anomaly even on the one measure where it's extreme. Quasi-resonant
+  amplification, at least in this regional-proxy form, joins the list of mechanisms
+  that do not explain March; a genuine global-wavenumber test remains a real, uncosted
+  option for ruling out the formal version of the theory.
 
 ## Method A vs. Method C: cross-cutting comparison
 
