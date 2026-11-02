@@ -1,0 +1,10 @@
+Prioritized next steps
+
+x 2. Build the combined Z500+T700 index proj_note.ipynb already called for, re-run face-validity checks to
+  quantify double-counting.
+x 3. Permutation/null test for Method A vs C's event-day footprint difference (already flagged as open in
+  cell 64). 
+x 4. Link the station-precip disagreement table to the specific wet-event case studies.
+  5. Sweep NETWORK_THRESH and MIN_DURATION.
+  6. Fix the colormap vmin.
+

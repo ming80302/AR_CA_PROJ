@@ -77,6 +77,22 @@ This README is an orientation map, not a substitute for it.
   stations** (150 daily-reporting, up from 147: 36 SNTL + 72 MSNT, up from 67 + 296
   CDEC, up from 209). All headline numbers in this README and the snowmelt notebooks
   below have been recomputed against the corrected, larger network.
+  **Disagreement case-study linkage (2026-11-02):** the 6 ERA5/station precip
+  disagreements from Section 5c were checked against this notebook's own named case
+  studies (the 1997 flood, Apr 2012) -- neither overlaps; the disagreements are 6
+  different, previously undiscussed events. Per-station (not just network-mean)
+  breakdown shows the two "ERA5-wet" disagreements (1991-02-21/27, 2016-04-03/08) are
+  spatially coherent across the network (42/44 and 27/35 stations agree it was dry,
+  station medians 5%/0%) -- genuine ERA5 overestimates, the strongest relabeling
+  candidates in the record. The four "ERA5-dry" disagreements split: two
+  (1992-04-26/05-01, 1994-04-14/22) look like spatial mismatch (a wet minority of
+  stations skews the network mean while the station median stays dry); 1996-04-26/
+  05-03 (the most extreme case, 0.2% vs. 240%) is a genuinely patchy storm (16/44
+  stations wet, 20/44 near zero) that ERA5's grid simply didn't resolve; 2000-05-22/30
+  is the cleanest reverse-relabeling candidate (15/27 stations and the station median
+  itself both wet). Net effect on the 45/13 dry/wet split is at most 46/12 of 58 --
+  too small to disturb the already-null T700/Z500 match-rate result (Fisher p=1.00),
+  so not rerun quantitatively.
 - **`CA_snowmelt_methodC_5daymean_std.ipynb`** -- snow-side analog of the atmospheric
   Method C notebook, same 5-day-mean-std event definition applied to the network
   decline fraction, as a robustness check. **Numbers revised (2026-10-31):** its
