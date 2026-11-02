@@ -270,6 +270,28 @@ Section 8's own numbers.
   all-time duration record by a wide margin over the previous record (12 days, which
   did have an above-median jet, consistent with the general relationship). Real at the
   population level, but March is an outlier with respect to it, not a confirming case.
+- **`CA_ridging_persistence_drivers_waf.ipynb`** -- *motivation:* `CA_2026_wave_activity_flux.ipynb`'s
+  wave-activity-flux (WAF) diagnostic was the other upstream notebook still stuck at
+  n=4 after the full-record Pacific fetch fixed it for scalar predictors; this notebook
+  extends it the same way, computing the same Takaya-Nakamura formula independently per
+  year (1990-2026, proxy per-year basic state kept for continuity, not switched to a
+  pooled climatology) and testing three convergence-based predictors (CA-box mean,
+  wider NW-Pac-to-CA path mean, fraction of event-days convergent) against the full
+  47-48-event record. Weak-wind mask tightened (2 to 3 m/s) plus a new outlier backstop
+  per the n=4 notebook's own flagged caveat -- confirmed to exclude only ~4.5 extra grid
+  points/day, a handful-scale correction. **Status: finished, sixth null/non-explanatory
+  result.** Z500 duration shows no relationship to any of the three WAF predictors
+  (p=0.46-0.75). T700 shows a weak, nominally significant but Bonferroni-uncorrected
+  relationship (path-mean convergence rho=-0.31 p=0.032, fraction convergent rho=-0.32
+  p=0.027) -- and it's reversed from Davis's "reinforced by impinging eddies" framing:
+  more convergence predicts *shorter* persistence. March 2026 itself sits at the
+  81st-94th percentile on all three measures (above-average, not a weak outlier) but
+  since Z500 duration doesn't relate to these measures at all, that doesn't explain its
+  record duration either -- the non-record 8-day Late Jan/Feb episode outranks March on
+  two of three measures, consistent with (not contradicting) a genuine null
+  relationship. Flags a possible, untested connection to the jet/trough finding above
+  (a troughier precursor could be a wave-energy source rather than a local convergence
+  zone) as a loose end for future work, not a resolved synthesis.
 
 ## Method A vs. Method C: cross-cutting comparison
 
