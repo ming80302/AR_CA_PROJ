@@ -357,6 +357,31 @@ Section 8's own numbers.
   even this relationship fails to explain 2026's own record-breaking clustering. Across
   eight notebooks and roughly a dozen hypotheses, this sharpens *what* needs explaining
   (season-long regeneration, not single-episode decay) without yet explaining it.
+- **`CA_ridging_persistence_antecedent_snowpack.ipynb`** -- *motivation:* a
+  genuinely project-native hypothesis connecting the clustering finding to a land-
+  atmosphere feedback running the opposite direction from everything else tested:
+  does a ridging episode's own snowmelt leave the surface anomalously dry/depleted,
+  priming the *next* episode (less evaporative cooling, more sensible heating) to
+  persist longer -- and did WY2026's three pre-March episodes progressively prime
+  March itself? Builds a network-mean standardized Sierra SWE-*level* anomaly (per-
+  station calendar-day climatology, fit 1990-2025, averaged across stations --
+  deliberately not a raw mm average, which this project's snow-side notebooks have
+  repeatedly flagged as station-composition-biased) from the combined SNOTEL+MSNT+CDEC
+  network already built for the snow-side notebooks -- no new fetch. **Status:
+  finished -- contradicted, not just null, and the sharpest single discrepancy for
+  March found so far.** The population relationship runs *opposite* to the hypothesis:
+  antecedent SWE-level anomaly vs. Z500 duration is rho=0.34 (p=0.017, n=48) --
+  *positive* -- events preceded by above-normal, not depleted, snowpack tend to last
+  slightly longer (T700: same direction, rho=0.15, not significant). March's own
+  antecedent anomaly was the most depleted of its own season (-0.87 to -0.90 sigma,
+  17th-19th percentile of the full record) -- under the relationship just found, that
+  should predict a *shorter* episode, not the longest on record by a wide margin. The
+  within-season trajectory does trend toward depletion (Jan +0.10 -> March -0.87) but
+  isn't a clean monotonic cascade (a flat step between the second and third episodes).
+  Notes, without testing, that the reversed relationship could be a byproduct of the
+  same PDO/ENSO background state already implicated elsewhere rather than a causal
+  effect of snow abundance itself. Sets aside this specific (depletion-priming) form
+  of land-atmosphere feedback as an explanation for March.
 
 ## Method A vs. Method C: cross-cutting comparison
 
