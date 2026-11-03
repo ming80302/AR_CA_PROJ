@@ -461,6 +461,36 @@ Section 8's own numbers.
   connects to `CA_ridging_persistence_gap_trough_depth.ipynb`'s shallow-trough finding
   as two independent signatures of the same idea (the background state staying fixed
   rather than resetting between episodes) -- not tested jointly, a real next step.
+- **`CA_ridging_persistence_trough_moisture_join.ipynb`** -- *motivation:* tests the
+  "real next step" flagged above directly: does the moisture pathway feeding the
+  episode before a gap resemble the one feeding the episode after it
+  (`ivt_pair_corr`, same precursor-map method as the template notebook, computed
+  per-gap across the full record instead of once for WY2026), and does *that*
+  predict a shallower trough or longer following episode, the way gap depth itself
+  does? Z300 (`z300_pair_corr`) is kept as an explicit dynamical control, since the
+  template notebook found no dynamical recurrence. Z500 only, no new fetch.
+  **Status: finished -- the join does not hold; the two findings are statistically
+  independent.** All six tests (2 pathway variables x 2 gap-depth metrics, plus 2
+  direct tests against following duration) are null at n=18 fit-period gaps
+  (p=0.08-0.90); nothing clears even a nominal 0.05 bar. The direct collinearity
+  check is the most informative result: `ivt_pair_corr` vs. `gap_min_sanom` is
+  essentially uncorrelated (rho=0.11, p=0.663) -- whether a gap's trough was shallow
+  and whether the moisture pathway persisted across it vary independently at the
+  population level. WY2026's own three gaps don't tell a clean story either: only
+  the gap immediately before March pairs elevated pathway persistence (78th
+  percentile) with its shallow trough (94th percentile), but the dynamical control
+  is equally elevated for that same gap (78th percentile), undercutting a
+  moisture-specific reading; the other two WY2026 gaps show no such alignment, and
+  the one gap with a genuinely deep trough (the Feb gap, 33rd percentile) has
+  exactly median pathway persistence, not the suppressed value a "conveyor prevents
+  troughs" story would predict. This notebook's three consecutive-pair IVT
+  correlations exactly reproduce three of the template notebook's six pairwise
+  values, confirming the computation matches -- and shows that notebook's 91st-
+  percentile season-wide result was not driven uniformly by adjacent-episode
+  persistence; it also reflects non-adjacent pairs this notebook didn't test. Net:
+  the gap-trough-depth and central-Pacific-template findings should continue to be
+  treated as two separate, individually-suggestive leads, not components of one
+  mechanism -- this specifically rules out one being explained by the other.
 
 ## Method A vs. Method C: cross-cutting comparison
 
