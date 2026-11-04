@@ -168,19 +168,23 @@ Section 8's own numbers.
   baseline yet) case-study -- motivates a test, isn't one. The first pass found a
   CA-box Z300 highest and domain-mean jet speed lowest during the record March episode,
   read at the time as a weakened-jet / no-omega-block signature. **Status: finished,
-  self-corrected.** After reading `March_2026_Western-US-Heat Wave.pdf` (Davis 2026,
-  see `## Related literature`) and a fresh-eyes review, two of those readings turned
-  out to be domain-mean artifacts rather than real findings -- a Section 7 follow-up
-  (now correctly positioned after the original conclusion it follows up on, fixing an
-  ordering bug a fresh-eyes review caught) splits the jet by latitude band, checks a
-  NW Pacific box for Davis's reported upstream omega
-  block, and recomposites IVT over just the 5-day onset window instead of the full
-  episode mean. Result: no clean single discriminator for March's exceptional
-  persistence -- Davis's reported ingredients (an AR-like moisture plume feeding a NW
-  Pacific block) show up at the onset of *both* March and a non-record 8-day episode
-  six weeks earlier, so they look necessary-ish but not sufficient. Consistent with,
-  not a resolution of, Davis's own admission that "the link between simultaneous
-  blocking events is unclear."
+  self-corrected twice.** After reading `March_2026_Western-US-Heat Wave.pdf` (Davis
+  2026, see `## Related literature`) and a fresh-eyes review, two of those readings
+  turned out to be domain-mean artifacts rather than real findings -- a Section 7
+  follow-up (now correctly positioned after the original conclusion it follows up on,
+  fixing an ordering bug a fresh-eyes review caught) splits the jet by latitude band,
+  checks a NW Pacific box for Davis's reported upstream omega block, and recomposites
+  IVT over just the 5-day onset window instead of the full episode mean. A second
+  fresh-eyes review then caught that the NW Pacific box (140-180E) was clipped at the
+  dateline, cutting off the ridge crest half of the omega pattern visible in the Feb
+  and March onset panels -- widened to 150-220E and rerun. Result: no clean single
+  discriminator for March's exceptional persistence, and the corrected box makes the
+  non-discrimination *worse*, not better -- Davis's reported ingredients (an AR-like
+  moisture plume feeding a closed NW Pacific cutoff/ridge) now show up at the onset of
+  three of the four episodes, cleanest for the non-record, 7-day Late Feb episode
+  immediately before March, not for March itself. Consistent with, not a resolution
+  of, Davis's own admission that "the link between simultaneous blocking events is
+  unclear."
 - **`CA_2026_dynamic_tropopause_diagnosis.ipynb`** -- follow-up using the dynamic
   tropopause (2-PVU surface) instead of a fixed pressure level, after reading the
   source analysis this project is partly built on (`March_2026_Western-US-Heat
