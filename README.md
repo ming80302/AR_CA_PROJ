@@ -421,26 +421,35 @@ Section 8's own numbers.
   in place with near-zero *wave-specific* phase speed. **Two real limitations stated up
   front:** this project's upstream field is regional (~110 degrees of longitude, ~30%
   of a full latitude circle), not global, so a true wavenumber-6-to-8 decomposition
-  isn't possible -- this notebook fits a single dominant large-scale harmonic across
-  the available sector instead, an honestly-labeled proxy, not a genuine wavenumber
-  attribution; and it uses fixed-pressure Z300 (matching the WAF/jet notebooks and the
-  QRA literature's own convention) rather than the dynamic tropopause, which gets it a
-  real full-record test instead of the DT notebook's unavoidable n=1. **Status:
-  finished -- March scores at the wrong end of every proxy measure tested.** Population
-  relationships are weak and mixed: wave amplitude nominally positive for T700 only
-  (rho=0.32, p=0.028, null for Z500), |phase speed| QRA-consistent in direction for
-  both variables but not significant (p=0.21, p=0.43), and the jet double-core
-  (waveguide) ratio -- the actual precondition QRA depends on -- nominally significant
-  for Z500 but **backwards** (rho=-0.34, p=0.020: more double-jet structure predicts
-  *shorter* persistence). None of six tests clears a Bonferroni bar. March itself: 8th
-  percentile wave amplitude (one of the *least* amplified large-scale waves in 36
-  years), 79th percentile |phase speed| (faster, not stationary), and the single
-  highest double-jet ratio in the entire record (100th percentile) -- which, given that
-  metric's negative population relationship, makes March's record duration a second-
-  order anomaly even on the one measure where it's extreme. Quasi-resonant
-  amplification, at least in this regional-proxy form, joins the list of mechanisms
-  that do not explain March; a genuine global-wavenumber test remains a real, uncosted
-  option for ruling out the formal version of the theory.
+  isn't possible -- this notebook instead least-squares-fits a single real zonal
+  wavenumber (`WAVENUMBER=6`, the literature's lower bound, checked for robustness
+  across k=4-8) within the available sector, an honestly-labeled proxy, not a genuine
+  global attribution; and it uses fixed-pressure Z300 (matching the WAF/jet notebooks
+  and the QRA literature's own convention) rather than the dynamic tropopause, which
+  gets it a real full-record test instead of the DT notebook's unavoidable n=1.
+  **Status: finished, revised 2026-11-04 after a bug fix changed the result
+  substantially.** The notebook's original harmonic fit forced exactly one wave cycle
+  across the available 110-degree sector regardless of the real physical wavenumber
+  present -- an artifact of the window's own width, not a measurement of a specific
+  wave. Refit against a real wavenumber, **March's position flips on two of three
+  measures**: wave amplitude moves from the 8th percentile (least amplified) to the
+  **75th** (moderately amplified), and |phase speed| moves from the 79th percentile
+  (faster than most) to the **4th** (among the most quasi-stationary episodes on
+  record) -- both now consistent with QRA's prediction, not against it. Population-
+  level: amplitude now correlates positively with duration for both variables (Z500
+  rho=0.26 p=0.071, T700 rho=0.28 p=0.054 at the headline wavenumber), reasonably
+  robust for T700 across k=4-7 (nominally significant at k=4, k=5, k=7) but breaking
+  down at k=8; |phase speed| stays weak and sign-inconsistent across wavenumbers --
+  not a robust finding at any k. The jet double-core (waveguide) ratio -- the one
+  measure this bug didn't touch, since it never used the harmonic fit -- is unchanged:
+  nominally significant for Z500 but **backwards** (rho=-0.34, p=0.020, more
+  double-jet structure predicts *shorter* persistence), and March's own record-highest
+  double-jet ratio (100th percentile) is still a second-order anomaly against that
+  metric's own relationship. None of six headline tests clears a Bonferroni bar.
+  **Net: no longer "joins the list of mechanisms that don't explain March" -- this is
+  now the most QRA-consistent evidence anywhere in the mechanism thread, short of a
+  confirmed explanation.** A genuine global-wavenumber test remains the clearest way
+  to settle the regional-proxy question definitively.
 - **`CA_ridging_persistence_gap_trough_depth.ipynb`** -- *motivation:* a specific
   refinement of a proposed hypothesis ("repeated ridge development plus insufficient
   intervening trough passage matters more than individual-ridge intensity") whose
@@ -465,9 +474,14 @@ Section 8's own numbers.
   immediately preceding March (Mar 2-10) was the *shallowest of WY2026's own three
   gaps* (min_sanom=-0.16, 95th percentile shallow) -- immediately followed by the
   19-day record episode. Every prior mechanism in this thread (jet speed, WAF
-  convergence/pulses, antecedent snowpack, QRA amplitude/phase/waveguide) had March as
-  an outlier *against* its own relationship; this is the first where March's case
-  aligns with it. Flagged explicitly as a lead worth a larger/more rigorous follow-up
+  convergence/pulses, antecedent snowpack, QRA's jet-waveguide ratio) had March as an
+  outlier *against* its own relationship; this was the first where March's case
+  aligns with it. *(Note, 2026-11-04: QRA's amplitude and phase-speed measures were
+  revised after a bug fix in that notebook and now also align with March's record
+  duration -- see that notebook's updated entry above -- so this is no longer the
+  *only* mechanism where March's case points the hypothesis-consistent direction, but
+  it remains the clearest event-level statistical result of the group.)* Flagged
+  explicitly as a lead worth a larger/more rigorous follow-up
   (n=19 is small, doesn't survive correction, T700 doesn't confirm), not a settled
   explanation -- but the most promising candidate this mechanism thread has produced.
 - **`CA_ridging_persistence_central_pacific_template.ipynb`** -- *motivation:* did
