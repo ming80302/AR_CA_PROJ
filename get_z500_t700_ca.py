@@ -47,7 +47,9 @@ def read_one_day(args):
 
 
 def extract_var(year, varcode, varname, level, out_level_name):
-    """varcode e.g. '128_129_z', varname e.g. 'Z'."""
+    """varcode e.g. '128_129_z', varname e.g. 'Z'. Returns (DataArray, day_strs) --
+    the caller needs day_strs to confirm every variable actually has the same days
+    before merging (see check_day_strs_match)."""
     day_das = []
     day_strs = []
     for month in MONTHS:
@@ -70,7 +72,22 @@ def extract_var(year, varcode, varname, level, out_level_name):
     out = xr.concat(day_das, dim='time')
     out = out.assign_coords(time=time_index).sortby('time')
     out = out.rename(out_level_name)
-    return out
+    return out, day_strs
+
+
+def check_day_strs_match(named_day_strs):
+    """named_day_strs: dict of varname -> day_strs list, each from a separate
+    per-variable RDA file tree (Z and T are stored as entirely separate archives,
+    so one can be missing a day the other has -- a real possibility across a
+    36-year pull, e.g. a partial outage or late-arriving reprocessed day). Without
+    this check, xr.merge's default outer join would silently insert NaN for the
+    missing variable on that day instead of flagging it."""
+    all_days = set().union(*(set(d) for d in named_day_strs.values()))
+    for varname, days in named_day_strs.items():
+        missing = sorted(all_days - set(days))
+        if missing:
+            print(f'WARNING: {varname} is missing {len(missing)} day(s) the other '
+                  f'variable(s) have: {missing[:5]}{"..." if len(missing) > 5 else ""}')
 
 
 def main():
@@ -81,16 +98,17 @@ def main():
         return
 
     print(f'{year}: extracting Z500 over CA box ...')
-    z500 = extract_var(year, '128_129_z', 'Z', 500.0, 'z500')
+    z500, z500_days = extract_var(year, '128_129_z', 'Z', 500.0, 'z500')
     z500 = z500 / G  # geopotential -> geopotential height (m)
     z500.attrs['units'] = 'm'
     z500.attrs['description'] = 'daily-mean 500 hPa geopotential height over CA box'
 
     print(f'{year}: extracting T700 over CA box ...')
-    t700 = extract_var(year, '128_130_t', 'T', 700.0, 't700')
+    t700, t700_days = extract_var(year, '128_130_t', 'T', 700.0, 't700')
     t700.attrs['units'] = 'K'
     t700.attrs['description'] = 'daily-mean 700 hPa temperature over CA box'
 
+    check_day_strs_match({'z500': z500_days, 't700': t700_days})
     ds_out = xr.merge([z500, t700])
     ds_out.attrs['script'] = 'get_z500_t700_ca.py'
     ds_out.attrs['box'] = f'lat {LAT_S}-{LAT_N}, lon {LON_W}-{LON_E} (California)'

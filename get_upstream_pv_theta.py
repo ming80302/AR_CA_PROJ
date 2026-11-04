@@ -57,7 +57,9 @@ def read_one_pl_day(args):
 
 def extract_pl_var(year, varcode, grid, varname, out_name):
     """Pressure-level analysis field, one file per day, all LEVELS kept (not
-    reduced to one) -- grid is 'sc' (scalar, PV/T) or 'uv' (vector, U/V)."""
+    reduced to one) -- grid is 'sc' (scalar, PV/T) or 'uv' (vector, U/V). Returns
+    (DataArray, day_strs) -- the caller needs day_strs to confirm every variable
+    actually has the same days before merging (see check_day_strs_match)."""
     day_das, day_strs = [], []
     for month in MONTHS:
         yyyymm = f'{year}{month:02d}'
@@ -76,7 +78,22 @@ def extract_pl_var(year, varcode, grid, varname, out_name):
 
     time_index = pd.to_datetime(day_strs, format='%Y%m%d')
     out = xr.concat(day_das, dim='time').assign_coords(time=time_index).sortby('time')
-    return out.rename(out_name)
+    return out.rename(out_name), day_strs
+
+
+def check_day_strs_match(named_day_strs):
+    """named_day_strs: dict of varname -> day_strs list, each from a separate
+    per-variable RDA file tree (PV/T/U/V are stored as entirely separate archives,
+    so one can be missing a day the others have -- a real possibility across a
+    36-year pull, e.g. a partial outage or late-arriving reprocessed day). Without
+    this check, xr.merge's default outer join would silently insert NaN for the
+    missing variable on that day instead of flagging it."""
+    all_days = set().union(*(set(d) for d in named_day_strs.values()))
+    for varname, days in named_day_strs.items():
+        missing = sorted(all_days - set(days))
+        if missing:
+            print(f'WARNING: {varname} is missing {len(missing)} day(s) the other '
+                  f'variable(s) have: {missing[:5]}{"..." if len(missing) > 5 else ""}')
 
 
 def main():
@@ -87,21 +104,22 @@ def main():
         return
 
     print(f'{year}: extracting PV ...')
-    pv = extract_pl_var(year, '128_060_pv', 'sc', 'PV', 'pv')
+    pv, pv_days = extract_pl_var(year, '128_060_pv', 'sc', 'PV', 'pv')
     pv.attrs.update(units='K m**2 kg**-1 s**-1', description='daily-mean potential vorticity')
 
     print(f'{year}: extracting T ...')
-    t = extract_pl_var(year, '128_130_t', 'sc', 'T', 't')
+    t, t_days = extract_pl_var(year, '128_130_t', 'sc', 'T', 't')
     t.attrs.update(units='K', description='daily-mean temperature')
 
     print(f'{year}: extracting U ...')
-    u = extract_pl_var(year, '128_131_u', 'uv', 'U', 'u')
+    u, u_days = extract_pl_var(year, '128_131_u', 'uv', 'U', 'u')
     u.attrs.update(units='m/s', description='daily-mean zonal wind')
 
     print(f'{year}: extracting V ...')
-    v = extract_pl_var(year, '128_132_v', 'uv', 'V', 'v')
+    v, v_days = extract_pl_var(year, '128_132_v', 'uv', 'V', 'v')
     v.attrs.update(units='m/s', description='daily-mean meridional wind')
 
+    check_day_strs_match({'pv': pv_days, 't': t_days, 'u': u_days, 'v': v_days})
     ds_out = xr.merge([pv, t, u, v])
     ds_out.attrs['script'] = 'get_upstream_pv_theta.py'
     ds_out.attrs['box'] = f'lat {LAT_S}-{LAT_N}, lon {LON_W}-{LON_E} (Pacific-North America)'

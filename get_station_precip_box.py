@@ -167,6 +167,22 @@ def fetch_cdec_precip(station_ids, hard_timeout=90):
             parts.append(g45[['date', 'value']].assign(station_id=sid))
         else:
             g2 = g[g.sensor == 2].sort_values('date').copy()
+            g2['date'] = pd.to_datetime(g2['date'])
+            # Reindex to a complete daily range BEFORE diffing: the NaN/-9999 filter
+            # above already dropped some rows, so g2's surviving rows can skip
+            # calendar days (e.g. a 2-3 day telemetry outage). Diffing the raw
+            # surviving-row sequence directly would compute the gap between the two
+            # SURVIVING readings, not between consecutive days -- attributing the
+            # whole multi-day accumulated total to the single day right after the
+            # gap, and silently dropping the gap days themselves with no NaN to flag
+            # it. Reindexing inserts an explicit NaN accumulated-reading for each
+            # missing day, so .diff() correctly comes back NaN for the gap days AND
+            # the first post-gap day (NaN minus a real reading, or vice versa) --
+            # dropped below, same as this file already treats missing data elsewhere
+            # (an absent row, not a misattributed or NaN one in the final output).
+            g2 = g2.set_index('date').reindex(
+                pd.date_range(g2['date'].min(), g2['date'].max(), freq='D', name='date')
+            )
             # Accumulated sensor resets to ~0 at the start of each water year (and
             # occasionally after a data gap), so .diff() goes sharply negative on the
             # reset day instead of reporting that day's real increment. clip(lower=0)
@@ -185,6 +201,7 @@ def fetch_cdec_precip(station_ids, hard_timeout=90):
             # committed notebook. Keep the conservative clip; the plausibility cap
             # below (applied to both sensor paths) catches the rest.
             g2['value'] = g2['value'].diff().clip(lower=0)
+            g2 = g2.reset_index().dropna(subset=['value'])
             parts.append(g2[['date', 'value']].assign(station_id=sid))
     out = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=['date', 'value', 'station_id'])
 

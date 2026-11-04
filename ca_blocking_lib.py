@@ -137,21 +137,28 @@ def climatology_dict(time_index, vals, window=5, compute_std=True, min_samples=1
                 if compute_std:
                     clim_std[k] = np.nan
                 continue
-        # pool.std() == 0 is too strict a check here: a near-but-not-quite-constant
-        # pool (e.g. float roundoff on repeated sensor readings) can land at
-        # std ~1e-14 rather than exactly 0, sails past an exact-equality guard, and
-        # then blows up downstream when something divides by it. Caught via a
-        # WINDOW=1 run where one station's pooled SWE-diff std was 5.7e-14 -- not
-        # zero, but not a real, usable climatological spread either. Runs regardless
-        # of dropna: standardize_with_trend's dense, gap-free callers hit the same
-        # degenerate-pool case and never pass dropna=True.
-        if compute_std and pool.std() < 1e-6:
-            clim_mean[k] = np.nan
-            clim_std[k] = np.nan
-            continue
         clim_mean[k] = pool.mean(axis=0)
         if compute_std:
             clim_std[k] = pool.std(axis=0)
+            # pool.std() == 0 is too strict a check here: a near-but-not-quite-constant
+            # pool (e.g. float roundoff on repeated sensor readings) can land at
+            # std ~1e-14 rather than exactly 0, sails past an exact-equality guard, and
+            # then blows up downstream when something divides by it. Caught via a
+            # WINDOW=1 run where one station's pooled SWE-diff std was 5.7e-14 -- not
+            # zero, but not a real, usable climatological spread either. Runs regardless
+            # of dropna: standardize_with_trend's dense, gap-free callers hit the same
+            # degenerate-pool case and never pass dropna=True.
+            #
+            # Checked per-point (not as a single pool.std() scalar) so this works the
+            # same way for a 1-D (box-mean) pool and a gridded (time, lat, lon) pool --
+            # a scalar check collapses space and time together, so one degenerate grid
+            # point could never trip the guard on its own, and the guard's own
+            # docstring promise ("too few valid pooled values... NaN") silently didn't
+            # hold per-point for any gridded caller.
+            degenerate = clim_std[k] < 1e-6
+            if np.any(degenerate):
+                clim_mean[k] = np.where(degenerate, np.nan, clim_mean[k])
+                clim_std[k] = np.where(degenerate, np.nan, clim_std[k])
     return (clim_mean, clim_std) if compute_std else clim_mean
 
 
@@ -581,6 +588,20 @@ def _self_test():
     clim_mean, clim_std = climatology_dict(time_index, vals, window=5)
     assert set(clim_mean.keys()) == set(clim_std.keys())
     assert all(s >= 0 for s in clim_std.values())
+
+    # climatology_dict: a gridded (time, lat, lon) pool with exactly one degenerate
+    # (constant) grid point must flag only that point as NaN, not either (a) miss it
+    # entirely because the other points' spread masks it in a single pooled-std
+    # scalar, or (b) flag the whole grid as NaN because one point happens to be
+    # degenerate
+    grid_vals = rng.normal(0, 1, (len(time_index), 2, 2))
+    grid_vals[:, 0, 0] = 5.0  # one constant grid point among three normal ones
+    clim_mean_grid, clim_std_grid = climatology_dict(time_index, grid_vals, window=5)
+    any_key = next(iter(clim_std_grid))
+    assert np.isnan(clim_std_grid[any_key][0, 0]), 'the constant grid point should be flagged degenerate'
+    assert np.isnan(clim_mean_grid[any_key][0, 0]), 'its mean should be NaN too, not the (meaningless) constant 5.0'
+    assert not np.isnan(clim_std_grid[any_key][0, 1]), 'a non-degenerate point must not be caught by the same check'
+    assert not np.isnan(clim_std_grid[any_key][1, 1]), 'a non-degenerate point must not be caught by the same check'
 
     # a Dec->Jan-spanning index must not raise or error -- pooling handles it via
     # circular day-of-year distance (see the dedicated wraparound-correctness check
