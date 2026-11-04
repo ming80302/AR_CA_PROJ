@@ -66,6 +66,21 @@ def fetch_stations():
     # equivalent AWDB (SNOTEL/MSNT) issue this fix is modeled on. Any station
     # with no data in the study period just contributes zero rows to the SWE
     # fetch below, so including it is harmless.
+    #
+    # 'dur': 'D' below does NOT filter which stations come back -- verified
+    # live (2026-11-04) that staSearch returns the identical 367-station set
+    # for dur='D', dur='M', dur='H', and no dur param at all. It's a search-UI
+    # field CDEC's staSearch endpoint doesn't actually enforce server-side, not
+    # a sensor/duration-code filter; this function already returns every
+    # physical station with sensor 3 in the box regardless of which duration
+    # code(s) it reports under. (A hypothesis that this field *did* filter --
+    # and so was silently dropping CA DWR's monthly-only manual snow courses,
+    # the southern-Sierra stations this script exists to capture -- did not
+    # hold up against the live API; main()'s fetch_swe() loop below already
+    # queries both 'D' and 'M' for every station this function returns, so
+    # that coverage was never actually at risk.) Left as 'D' rather than
+    # removed, since it's harmless and matches the original staSearch form's
+    # own default.
     r = requests.get(
         f'{API}/staSearch',
         params={
