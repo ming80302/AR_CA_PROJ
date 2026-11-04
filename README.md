@@ -691,3 +691,10 @@ jupyter nbconvert --to notebook --execute --inplace \
 ```
 
 Fetch scripts run in the `claude_test` conda environment (see the `.pbs` files).
+`scipy` was added to `claude_test` on 2026-11-04 (`pip install scipy`, matching how
+every other package in this env was installed -- its `conda-meta/history` only
+records the initial `conda create -n claude_test python=3.12`) so that
+`ca_blocking_lib.py`'s built-in self-test suite (`python ca_blocking_lib.py`, which
+needs `scipy.stats.linregress`/`theilslopes`) actually runs in the env this file says
+to use, instead of silently failing with `ModuleNotFoundError` whenever someone
+followed this doc as written.
