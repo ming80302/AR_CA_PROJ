@@ -1,0 +1,26 @@
+#!/bin/bash -l
+### Ming Ge / Claude, Nov 2026
+### Extract Pacific-North America upstream fields (Z300/U300/V300/MSL/SST/TCC/IVT,
+### Jan-Apr) for one year per array index -- full-record extension (1990-2025) of
+### the upstream-mechanism dataset, previously only fetched for 2026. See
+### CA_ridging_persistence_drivers.ipynb's conclusion for why this is worth the cost
+### and README's "Mechanism" section for the cost/benefit discussion.
+
+#PBS -N get_upstream_pacific
+#PBS -A P66770001
+#PBS -l select=1:ncpus=8
+#PBS -l walltime=06:00:00
+#PBS -q casper
+#PBS -J 1990-2025
+#PBS -j oe
+#PBS -o /glade/derecho/scratch/mingge/logs/get_upstream_pacific_^array_index^.log
+
+export TMPDIR=/glade/derecho/scratch/$USER/temp
+mkdir -p $TMPDIR
+mkdir -p /glade/derecho/scratch/mingge/logs
+
+source /glade/u/home/mingge/miniforge3/etc/profile.d/conda.sh
+conda activate /glade/work/mingge/conda-envs/claude_test
+
+exe=/glade/u/home/mingge/ERA5/AR_CA_PROJ/get_upstream_pacific.py
+python $exe $PBS_ARRAY_INDEX
