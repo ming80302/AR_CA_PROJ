@@ -418,8 +418,17 @@ Section 8's own numbers.
   not discrete reinforcement pulses (`CA_ridging_persistence_drivers_waf.ipynb`), not
   whole-field phase speed (`CA_2026_dynamic_tropopause_diagnosis.ipynb`), but whether a
   particular large-scale wave gets trapped by a waveguide (a double jet) and amplifies
-  in place with near-zero *wave-specific* phase speed. **Two real limitations stated up
-  front:** this project's upstream field is regional (~110 degrees of longitude, ~30%
+  in place with near-zero *wave-specific* phase speed. **Literature-accuracy note,
+  added 2026-11-04: QRA is contested, not settled, theory** -- Petoukhov et al. (2013)
+  drew a direct published rebuttal the same year (Screen & Simmonds, PNAS 110:E2327),
+  and a 2026 study (Linz & Mooring, *Resonant Rossby wave mechanism for extreme
+  weather performs poorly in simple model test*, Science Advances,
+  doi:10.1126/sciadv.adp3054) found QRA's predictions fail in a simplified model
+  test. This notebook's own findings (below) describe whether March 2026 matches the
+  QRA *pattern* on this project's data, not an independent confirmation of the
+  mechanism itself -- see the notebook's intro for the full discussion. **Two real
+  limitations stated up front:** this project's upstream field is regional (~110
+  degrees of longitude, ~30%
   of a full latitude circle), not global, so a true wavenumber-6-to-8 decomposition
   isn't possible -- this notebook instead least-squares-fits a single real zonal
   wavenumber (`WAVENUMBER=6`, the literature's lower bound, checked for robustness
