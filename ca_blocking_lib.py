@@ -40,6 +40,22 @@ def open_yearly_dataset(files, missing_hint=''):
     return xr.open_dataset(files[0], engine='netcdf4')
 
 
+def _ordered_lat_slice(lat_values, lat_slice):
+    """Reorder a latitude slice's bounds to match `lat_values`'s actual
+    ascending/descending direction, so callers can pass either slice(south, north)
+    or slice(north, south) regardless of how a given dataset's latitude happens to
+    be stored. xr.sel silently returns an empty selection (no error) when a slice's
+    bound order doesn't match the coordinate's direction -- e.g. slice(34, 38) on
+    ERA5's descending (90 -> -90) latitude drops the box entirely instead of
+    raising.
+    """
+    if not isinstance(lat_slice, slice) or lat_slice.start is None or lat_slice.stop is None:
+        return lat_slice
+    lo, hi = sorted((lat_slice.start, lat_slice.stop))
+    descending = lat_values[0] > lat_values[-1]
+    return slice(hi, lo) if descending else slice(lo, hi)
+
+
 def box_average_df(ds, variables, lat_slice=None, lon_slice=None, months=(1, 2, 3, 4)):
     """Cosine-latitude-weighted box average of each variable in `ds` over
     (optionally sub-box-sliced) latitude/longitude, as a month-filtered daily
@@ -50,7 +66,7 @@ def box_average_df(ds, variables, lat_slice=None, lon_slice=None, months=(1, 2, 
     if lat_slice is not None or lon_slice is not None:
         sel = {}
         if lat_slice is not None:
-            sel['latitude'] = lat_slice
+            sel['latitude'] = _ordered_lat_slice(ds.latitude.values, lat_slice)
         if lon_slice is not None:
             sel['longitude'] = lon_slice
         ds = ds.sel(**sel)
@@ -744,6 +760,19 @@ def _self_test():
     df_box = box_average_df(ds_test, ['v'], months=(1, 2, 3, 4))
     assert np.allclose(df_box['v'], const_val)
     assert df_box.index.month.isin([1, 2, 3, 4]).all() and not (df_box.index.month == 5).any()
+
+    # box_average_df: lat_slice should work the same whether its bounds are given
+    # as (south, north) or (north, south), and regardless of whether the dataset's
+    # own latitude coordinate is ascending or descending -- not silently return an
+    # empty box when the slice direction happens to mismatch the data's direction.
+    ds_desc = ds_test.isel(latitude=slice(None, None, -1))
+    for ds_dir, label in ((ds_test, 'ascending'), (ds_desc, 'descending')):
+        for lat_slice in (slice(32, 38), slice(38, 32)):
+            df_sub = box_average_df(ds_dir, ['v'], lat_slice=lat_slice, months=(1, 2, 3, 4))
+            assert np.allclose(df_sub['v'], const_val), (
+                f'box_average_df returned an empty/wrong box for {label} latitude '
+                f'with lat_slice={lat_slice}'
+            )
 
     # boot_ci_proportion: CI of an all-True array should be exactly [100, 100]
     lo_p, hi_p = boot_ci_proportion(np.ones(20, dtype=bool), n_boot=100, rng=rng)
