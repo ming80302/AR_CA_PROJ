@@ -168,23 +168,37 @@ Section 8's own numbers.
   baseline yet) case-study -- motivates a test, isn't one. The first pass found a
   CA-box Z300 highest and domain-mean jet speed lowest during the record March episode,
   read at the time as a weakened-jet / no-omega-block signature. **Status: finished,
-  self-corrected twice.** After reading `March_2026_Western-US-Heat Wave.pdf` (Davis
-  2026, see `## Related literature`) and a fresh-eyes review, two of those readings
-  turned out to be domain-mean artifacts rather than real findings -- a Section 7
-  follow-up (now correctly positioned after the original conclusion it follows up on,
-  fixing an ordering bug a fresh-eyes review caught) splits the jet by latitude band,
-  checks a NW Pacific box for Davis's reported upstream omega block, and recomposites
-  IVT over just the 5-day onset window instead of the full episode mean. A second
-  fresh-eyes review then caught that the NW Pacific box (140-180E) was clipped at the
-  dateline, cutting off the ridge crest half of the omega pattern visible in the Feb
-  and March onset panels -- widened to 150-220E and rerun. Result: no clean single
-  discriminator for March's exceptional persistence, and the corrected box makes the
-  non-discrimination *worse*, not better -- Davis's reported ingredients (an AR-like
-  moisture plume feeding a closed NW Pacific cutoff/ridge) now show up at the onset of
-  three of the four episodes, cleanest for the non-record, 7-day Late Feb episode
-  immediately before March, not for March itself. Consistent with, not a resolution
-  of, Davis's own admission that "the link between simultaneous blocking events is
-  unclear."
+  self-corrected three times.** After reading `March_2026_Western-US-Heat Wave.pdf`
+  (Davis 2026, see `## Related literature`) and a fresh-eyes review, two of those
+  readings turned out to be domain-mean artifacts rather than real findings -- a
+  Section 7 follow-up (now correctly positioned after the original conclusion it
+  follows up on, fixing an ordering bug a fresh-eyes review caught) splits the jet by
+  latitude band, checks a NW Pacific box for Davis's reported upstream omega block, and
+  recomposites IVT over just the 5-day onset window instead of the full episode mean. A
+  second fresh-eyes review then caught that the NW Pacific box (140-180E) was clipped
+  at the dateline, cutting off the ridge crest half of the omega pattern visible in the
+  Feb and March onset panels -- widened to 150-220E and rerun. That corrected box
+  initially read as a robust result (Late Feb ranks above March, and the ranking
+  survived a 27-combination sweep of the box's east/north edges). **A third fresh-eyes
+  review found that "robust" claim itself didn't hold up**: a differently-shaped box
+  (160-205E, 35-55N) flips the ranking, because its edges happen to sit almost exactly
+  on top of March's trough rather than containing its wave -- an east-edge sweep
+  confirmed the ranking flips within 5-7 degrees of longitude, right at March's actual
+  trough. A follow-up box built from three explicit design principles (exclude the
+  region a developing ridge might already occupy, match this notebook's own
+  established midlatitude jet band, keep the south edge out of the IVT plume's typical
+  latitude) was the first to get full-episode and onset-window means to agree, but
+  still didn't cleanly contain three of the four episodes' waves -- a reassuring data
+  point, not a validated box. The fixed-box approach is now retracted as untrustworthy
+  for this comparison. In its place, a box-free phase-following diagnostic (each
+  episode's actual 45-55N-band trough and downstream-ridge longitude, tracked
+  directly, no box) was stress-tested across 5 latitude bands (35-50N to 50-60N) and 5
+  smoothing-window settings -- unlike the box-mean statistic, its result never flipped:
+  **March's onset-window trough-to-ridge amplitude is the weakest of all four
+  episodes, in every variant tested**, the opposite of what the omega-block hypothesis
+  predicts. Consistent with, not a resolution of, Davis's own admission that "the link
+  between simultaneous blocking events is unclear" -- but now a validated negative
+  result (weakest, not merely non-discriminating) rather than a box-placement artifact.
 - **`CA_2026_dynamic_tropopause_diagnosis.ipynb`** -- follow-up using the dynamic
   tropopause (2-PVU surface) instead of a fixed pressure level, after reading the
   source analysis this project is partly built on (`March_2026_Western-US-Heat
@@ -200,10 +214,13 @@ Section 8's own numbers.
   and during the March episode, with March's fit if anything cleaner, not slower. The
   "textbook blocking" claim is retracted, not softened -- most likely an amplitude
   illusion (March's anomaly was much larger, not slower-moving). Net result: across
-  both upstream notebooks, nothing tested so far (jet speed, NW Pacific ridging,
-  onset-window moisture, or now wave phase speed) explains why March persisted three
-  times longer than its WY2026 predecessors -- `CA_2026_upstream_mechanism_composite.ipynb`
-  Section 7's open question is still open.
+  both upstream notebooks, nothing tested so far (jet speed, NW Pacific ridging
+  box-mean, onset-window moisture, or now wave phase speed) *positively* explains why
+  March persisted three times longer than its WY2026 predecessors. The one validated
+  (box-free, stress-tested) negative result -- March's upstream wave amplitude is the
+  *weakest* of the four, not the strongest -- argues specifically against the
+  omega-block-reinforcement mechanism, but `CA_2026_upstream_mechanism_composite.ipynb`
+  Section 7's open question (what *does* explain it) is still open.
 - **`CA_ridging_persistence_drivers.ipynb`** -- *motivation:* both notebooks above test
   upstream-Pacific precursor hypotheses against a single contrast -- the four WY2026
   episodes, all from one year, because upstream Pacific fields have only ever been
