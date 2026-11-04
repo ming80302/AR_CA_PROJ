@@ -205,22 +205,31 @@ Section 8's own numbers.
   Wave.pdf`, see below) and realizing a fixed-level composite can't resolve ridge
   structure the way a dynamically-correct surface can. Reproduces the paper's
   theta-on-DT map and DT Hovmoller diagnostics. **Status: finished, including a
-  retraction.** The theta-on-DT maps hold up well -- March shows the broadest,
-  smoothest amplified ridge of the four episodes. The Hovmoller's initial read (a
-  normal propagating wave that "visibly stalls" into blocking during March) did
-  **not** survive quantification: a whole-field phase-speed scan (Section 5, after two
-  cruder methods -- day-to-day peak tracking and two-point lag correlation -- failed
-  or gave inconsistent results) finds the *same* ~4-6 m/s eastward phase speed before
-  and during the March episode, with March's fit if anything cleaner, not slower. The
-  "textbook blocking" claim is retracted, not softened -- most likely an amplitude
-  illusion (March's anomaly was much larger, not slower-moving). Net result: across
-  both upstream notebooks, nothing tested so far (jet speed, NW Pacific ridging
-  box-mean, onset-window moisture, or now wave phase speed) *positively* explains why
-  March persisted three times longer than its WY2026 predecessors. The one validated
-  (box-free, stress-tested) negative result -- March's upstream wave amplitude is the
-  *weakest* of the four, not the strongest -- argues specifically against the
-  omega-block-reinforcement mechanism, but `CA_2026_upstream_mechanism_composite.ipynb`
-  Section 7's open question (what *does* explain it) is still open.
+  retraction that was itself later reopened.** The theta-on-DT maps hold up well --
+  March shows the broadest, smoothest amplified ridge of the four episodes. The
+  Hovmoller's initial read (a normal propagating wave that "visibly stalls" into
+  blocking during March) first looked like it did **not** survive quantification: a
+  whole-field phase-speed scan (Section 5, after two cruder methods -- day-to-day peak
+  tracking and two-point lag correlation -- failed or gave inconsistent results) found
+  the *same* ~4-6 m/s eastward phase speed before and during the March episode, and
+  retracted the "textbook blocking" claim as an amplitude illusion. **A fresh-eyes
+  review, applying the same diagnostic-choice scrutiny that caught the companion
+  notebook's box-placement knife-edge, found that retraction rested on an
+  unstress-tested latitude band (25-45N, chosen for the Hovmoller figure) and a coarse
+  2 m/s speed grid.** A finer grid already shows a drop in that band; rebuilding the
+  diagnostic in the latitude band the companion notebook independently identifies as
+  where the wave actually lives (40-55N) shows March's wave moving at roughly a third
+  of its pre-March speed, confirmed as a real signal (not noise) by a sharply-peaked
+  correlation curve despite a third the sample size. **Section 5's retraction is now
+  itself retracted**, though "measurably slower" is short of the original "textbook
+  blocking" framing's implication of a near-total stop. Net result: across both
+  upstream notebooks, jet speed and NW Pacific box-mean ridging still don't
+  discriminate March from the other three episodes, and the companion notebook's
+  box-free diagnostic finds March's upstream wave *amplitude* was the weakest of the
+  four -- but this notebook now finds its *phase speed* was measurably slower, not
+  unchanged, giving a coherent (if still incomplete) picture: a weaker but
+  slower-moving disturbance. `CA_2026_upstream_mechanism_composite.ipynb` Section 7's
+  open question (what *fully* explains the persistence) remains open.
 - **`CA_ridging_persistence_drivers.ipynb`** -- *motivation:* both notebooks above test
   upstream-Pacific precursor hypotheses against a single contrast -- the four WY2026
   episodes, all from one year, because upstream Pacific fields have only ever been
