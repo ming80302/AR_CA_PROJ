@@ -625,6 +625,43 @@ Section 8's own numbers.
   magnitude would wash out rather than isolate -- flagged as the remaining open angle if this
   specific hypothesis is revisited.
 
+- **`CA_ridging_persistence_ivt_pathway_timing.ipynb`** -- *motivation:* the magnitude-test
+  notebook above flagged what it couldn't test: Davis's documented March 2026 mechanism is a
+  brief, concentrated, onset-phase moisture plume feeding diabatic heating into the *forming*
+  ridge -- a pathway/timing question, not a magnitude-by-month one --
+  `CA_ridging_persistence_central_pacific_template.ipynb` independently found supporting
+  evidence at the pathway level (WY2026's precursor IVT *patterns*, not magnitudes, were more
+  similar to each other than a historical null). Tests two angles directly, zero new fetch:
+  does upstream moisture lead downstream ridge-building by a consistent lag that varies by
+  season (event-aligned, event-bootstrapped cross-correlation), and is the onset-window pulse
+  concentrated/AR-like (peak-day vs. 5-day-mean ratio, peak single-grid-cell IVT, area-weighted
+  fraction of the box above a standard 250 kg/m/s AR-intensity threshold) rather than diffuse,
+  and does *that* -- not mean magnitude -- predict intensity. **Status: finished -- no
+  March-specific sweet spot on either angle, and the timing signal itself turns out to be a
+  box-placement knife-edge.** The pooled lead-lag relationship is weakly *negative* at short
+  lags (rho=-0.07 to -0.10, p<0.01, both variables) -- opposite the "moisture concurrently
+  builds the ridge" expectation -- with only a marginal hint of a positive relationship at the
+  extreme edge of the tested +10-day window, and that hint is not box-robust (p=0.0013-0.28
+  across 7 box variants). The month-binned version adds a direct disconfirmation: the Feb-Mar
+  bin (containing March) is the *weakest, only non-significant* of three month bins, while Jan
+  and Apr both show nominally significant lagged relationships -- the opposite of what a
+  mid-season sweet spot predicts. Organization metrics mostly replicate the magnitude
+  notebook's "rises through the season" pattern rather than peaking in March
+  (`peak_gridcell_ivt` 382->559 kg/m/s, `ar_area_fraction` 0.075->0.185, both Jan->Apr); the
+  one metric with a population-level intensity relationship, `concentration_ratio` (pulse-like
+  vs. steady), is *negative* (Z500 rho=-0.25 p=0.083, T700 rho=-0.28 p=0.054) -- a more
+  concentrated pulse associates with a *weaker* episode, opposite the naive "AR pulse builds a
+  stronger ridge" prediction -- direction-stable but significance-fragile across box variants
+  (2 of 7 clear p<0.05), the same "edge of detectability" character as the T700/WAF box-mean
+  result elsewhere in this project. March 2026 itself is unremarkable on every organization
+  metric (concentration_ratio 25th pct, peak_gridcell_ivt 52nd, ar_area_fraction 54th). One
+  loose, explicitly non-statistical thread: a single-episode (n=1, too short for a real test)
+  version of the lag diagnostic puts March's own best-fit lag at 0 days (simultaneous), vs.
+  3-9 days for its three WY2026 siblings -- the one result anywhere in either IVT notebook
+  that matches Davis's literal "feeding the ridge as it forms" framing specifically for March,
+  but a single data point, not a tested relationship, and flagged as exactly that rather than
+  oversold.
+
 ## Method A vs. Method C: cross-cutting comparison
 
 Both the atmospheric and snow sides define a headline "Method A" (explicit threshold +
