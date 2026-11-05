@@ -592,6 +592,38 @@ Section 8's own numbers.
   the gap-trough-depth and central-Pacific-template findings should continue to be
   treated as two separate, individually-suggestive leads, not components of one
   mechanism -- this specifically rules out one being explained by the other.
+- **`CA_ridging_persistence_ivt_seasonality.ipynb`** -- *motivation:* a fresh-eyes
+  hypothesis proposed that March is a unique "sweet spot" where upstream ARs are still
+  strong enough to feed ridge-building heat, unlike early season (strong ARs, weak melt)
+  or late season (weak ARs, ridging less effective) -- a two-part claim; the
+  melt-triggering-threshold half was already supported by
+  `CA_snowmelt_april_vs_janmar_match_test.ipynb`/`CA_t2m_local_heatwave_vs_snowmelt.ipynb`,
+  but the AR-ridging half was new and untested. Tests it directly against the full
+  1990-2025 upstream-Pacific record (no new fetch) with a box-sensitivity sweep built in
+  from the start, given this project's repeated box-placement-knife-edge history. **Status:
+  finished -- not supported, and the seasonal-decline premise is actually reversed,
+  robustly so.** NW-Pacific box-mean IVT rises monotonically Jan-Apr (70.6 -> 74.5 -> 91.8
+  -> 116.0 kg/m/s, Kruskal-Wallis p<0.0001) rather than declining, both unconditionally and
+  conditioned on actual ridging events (onset-window IVT vs. onset month: rho=0.61 Z500 /
+  0.68 T700, both p<0.0001) -- **the one upstream box-mean result in this entire thread that
+  survives a 7-variant box-sensitivity sweep intact**, in sharp contrast to every other
+  box-based diagnostic tried elsewhere (likely reflects rising atmospheric moisture-holding
+  capacity through the season in this specific source-region box, a different variable from
+  AR/storm *frequency* at the CA coast, which this notebook does not test or rely on a
+  citation for). Onset-window IVT magnitude has no relationship to resulting ridge/warm-episode
+  peak intensity at any point in the season -- pooled (rho=-0.00/-0.04, p>0.7), via a linear
+  IVT x month interaction (p=0.335/0.423), or in a direct three-bin "sweet spot" shape check
+  (no hump, inconsistent sign, nothing significant) -- also box-sensitivity-robust. March
+  2026's own onset IVT is moderately elevated but unremarkable within its own season (77th/74th
+  percentile of the fit-period/calendar-day-matched distributions) -- less anomalous-for-its-
+  calendar-date than WY2026's own January episode (84th percentile), despite that episode
+  being the shortest and least intense of the four. Joins the mechanism thread's list of
+  non-explanatory results, but one that is box-robust rather than a knife-edge -- stated with
+  more confidence than most other nulls in this thread. Explicitly does not test moisture
+  *pathway* shape (where `CA_ridging_persistence_central_pacific_template.ipynb` already found
+  a real signal) or Davis's brief, concentrated onset-phase IVT plume, which a 5-day box-mean
+  magnitude would wash out rather than isolate -- flagged as the remaining open angle if this
+  specific hypothesis is revisited.
 
 ## Method A vs. Method C: cross-cutting comparison
 
