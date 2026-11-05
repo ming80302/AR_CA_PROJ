@@ -315,7 +315,14 @@ Section 8's own numbers.
   the honest reading is "no stable ranking emerges," not "Late Jan/Feb demonstrably
   beats March" -- the same box-placement knife-edge found in
   `CA_2026_upstream_mechanism_composite.ipynb` Section 7 and
-  `CA_2026_dynamic_tropopause_diagnosis.ipynb` Section 5. Over the wider
+  `CA_2026_dynamic_tropopause_diagnosis.ipynb` Section 5.
+  **[Fixed again, 2026-11-05]** Sections 4-6's box-mean *reduction* step (downstream
+  of the prefactor fix above) was a separate, still-unweighted `cos(lat)` gap, found
+  during a systematic sweep for the same bug pattern elsewhere in the project. Re-run:
+  March's CA-box convergence barely moved (+0.9e-5 vs. +1.0e-5), the 12-variant
+  overtake count moved from 5 to 4, and the specific illustrative flip example changed
+  (a south-edge shift now does it, not the original north-edge one) -- the "no stable
+  ranking emerges" conclusion itself is unchanged. Over the wider
   NW-Pacific-to-CA wave path (not box-swept), all four episodes show net
   *divergence* on average, with no March-specific signature either way. Still a
   fourth non-explanatory result for March specifically (joining intensity, onset
@@ -383,11 +390,23 @@ Section 8's own numbers.
   this isn't "the box is always wrong," but it is enough to retract "fully null, in
   either direction" -- the honest statement is that T700/WAF-convergence sits right
   at the edge of detectability, and a fixed-box statistic can land on either side of
-  that edge depending on exactly where the box sits. March 2026 itself sits at the
-  79th-83rd percentile on all three measures post-fix (above-average, not a weak
-  outlier) but since Z500 duration doesn't relate to these measures at all, that
-  doesn't explain its record duration either -- the non-record 8-day Late Jan/Feb
-  episode outranks March on two of three measures. Flags a possible, untested
+  that edge depending on exactly where the box sits.
+  **[Fixed again, 2026-11-05]** The box-mean *reduction* step (`compute_waf_daily`/
+  `compute_waf_daily_multibox`), downstream of the prefactor fix above, was a
+  separate, still-unweighted `cos(lat)` gap -- found during a systematic sweep for
+  the same bug pattern elsewhere in the project. Re-run: every number above moved by
+  less than 0.03 in rho and did not cross any significance threshold in either
+  direction -- Z500 stays fully null (rho=0.14/0.03/-0.02, p=0.35/0.81/0.92), T700's
+  baseline null and its one box-sensitive crossing (east-shifted box: rho=-0.30
+  p=0.038, rho=-0.32 p=0.027) both hold up essentially unchanged, and the
+  pulse-structure predictors below also stay null, nudged only slightly closer to
+  (not across) the 0.05 bar (T700 fraction-convergent rho=-0.25 p=0.09, was p=0.12).
+  All qualitative conclusions in this notebook are unaffected by this second fix.
+  March 2026 itself sits at the 79th-83rd percentile on all three measures post-fix
+  (above-average, not a weak outlier) but since Z500 duration doesn't relate to these
+  measures at all, that doesn't explain its record duration either -- the non-record
+  8-day Late Jan/Feb episode outranks March on two of three measures. Flags a
+  possible, untested
   connection to the jet/trough finding above (a troughier precursor could be a
   wave-energy source rather than a local convergence zone), and now also flags the
   T700/box-mean relationship as a real, open possibility worth a proper multi-box or
@@ -399,16 +418,20 @@ Section 8's own numbers.
   using the same daily series already computed (no new data). Predictors are
   rate/fraction-based specifically to avoid the tautology that a longer event
   mechanically fits more raw pulse counts. Post-fix, also null for Z500 (rho=-0.08
-  p=0.60, rho=0.06 p=0.67) and now null (not just marginal) for T700 too (pulse rate
-  rho=-0.21 p=0.16, second-half-convergent fraction rho=-0.23 p=0.12, vs. the pre-fix
-  rho=-0.29, p=0.052/0.051 that sat right at the conventional threshold) -- the one
-  place this notebook's original pass found any predictor near significance turns
-  out to have been the missing `cos(lat)` term, not a real near-miss (not
-  separately re-tested for box sensitivity). March's 19-day sequence shows 5
+  p=0.60, rho=0.01 p=0.93) and now null (not just marginal) for T700 too (pulse rate
+  rho=-0.21 p=0.15, second-half-convergent fraction rho=-0.25 p=0.09, vs. the
+  pre-prefactor-fix rho=-0.29, p=0.052/0.051 that sat right at the conventional
+  threshold) -- the one place this notebook's original pass found any predictor near
+  significance turns out to have been the missing `cos(lat)` term, not a real
+  near-miss (not separately re-tested for box sensitivity). (Numbers above include
+  the 2026-11-05 box-mean area-weighting fix noted earlier in this entry -- it nudged
+  the T700 fraction-convergent p-value from 0.12 to 0.09 without crossing 0.05;
+  nothing else in this paragraph moved materially.) March's 19-day sequence shows 5
   distinct pulses (more than any WY2026 sibling in raw count) but its
-  rate-normalized pulse rate (71st percentile post-fix) and second-half-convergent
-  fraction (65th percentile, *lower* than the short Late Jan/Feb episode's 83rd) are
-  both unremarkable -- the "recharging" hypothesis remains closed out as a seventh
+  rate-normalized pulse rate (71st percentile, unchanged by either fix) and
+  second-half-convergent fraction (63rd percentile, was 65th post-prefactor-fix,
+  *lower* than the short Late Jan/Feb episode's 83rd, unchanged) are both
+  unremarkable -- the "recharging" hypothesis remains closed out as a seventh
   null/non-explanatory result, now on cleaner (not just unfixed) numbers.
 - **`CA_ridging_persistence_background_state.ipynb`** -- *motivation:* every notebook
   above tests an instantaneous precursor or contemporaneous field; none test
