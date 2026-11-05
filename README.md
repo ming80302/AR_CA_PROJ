@@ -149,6 +149,22 @@ This README is an orientation map, not a substitute for it.
   definitions, not a confirmed statement of their own specific method (deferred in the
   paper to a supporting-information file this project doesn't have) -- the notebook
   originally overstated that attribution in five places, now corrected.
+  **Extension (2026-11-04): does required persistence decline continuously with
+  day-of-year, not just step once in April?** A literal month-by-month version of this
+  question isn't answerable -- the 41 Jan-Apr melt events split 0 (Jan) / 6 (Feb) / 11
+  (Mar) / 24 (Apr), too thin (or empty) for a per-month sweep -- so this tests it with a
+  per-event continuous metric instead: `max_matched_duration`, the longest sustained
+  top-decile-warm run actually associated with each melt event. **Yes, at the headline
+  (90th pct) threshold**: rho=-0.35 (p=0.0257, 90% bootstrap CI=[-0.57,-0.08], excludes
+  zero) against day-of-year; weaker and not significant at 95th pct (rho=-0.25, p=0.119) --
+  direction-consistent but threshold-dependent. A Feb/Mar/Apr descriptive cross-check
+  (Jan excluded) shows medians stepping down in calendar order, not just differing:
+  8.5 -> 5.0 -> 3.0 days (Kruskal-Wallis p=0.0278, n=6/11/24, Feb bin thin). Sharpens
+  rather than just confirms the finding above: the persistence requirement eases
+  gradually across Feb-Apr, consistent with cold content as a continuously-depleting
+  quantity, rather than stepping down specifically at the April calendar boundary.
+  Zero new fetch -- `t2m_sierra_<year>.nc` only covers Jan-Apr, so this doesn't reach the
+  17 May-onset events in the full 58-event melt record (likely the gradient's tail end).
 
 ## Mechanism: why do some ridging episodes persist longer than others?
 
