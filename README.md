@@ -66,7 +66,7 @@ This README is an orientation map, not a substitute for it.
   Section 5c's cross-check numbers were revised accordingly (Spearman rho 0.44, not
   the earlier ~0.5; 3 of 45 "dry" events now show a reverse disagreement against
   station gauges, not zero) -- see the notebook's own Section 5c conclusion for the
-  full caveat.
+  full caveat. (Superseded again below -- see the 2026-11-05 note.)
   **Station-count note (2026-11-01):** `get_snotel_box.py`/`get_msnt_box.py` were
   fetching AWDB with `activeOnly=true`, and `get_cdec_box.py` with CDEC's equivalent
   active-station filter -- both silently drop stations decommissioned before today
@@ -93,6 +93,27 @@ This README is an orientation map, not a substitute for it.
   itself both wet). Net effect on the 45/13 dry/wet split is at most 46/12 of 58 --
   too small to disturb the already-null T700/Z500 match-rate result (Fisher p=1.00),
   so not rerun quantitatively.
+  **Superseded, 2026-11-05 (code-review bug fix):** the 2026-11-04 code-review pass
+  (commit `61e682a`) fixed a `get_station_precip_box.py` bug where a multi-day CDEC
+  telemetry outage silently collapsed into one misattributed, inflated
+  accumulated-precip day instead of being dropped -- but the fix hadn't yet been
+  propagated into this section's underlying data file. Re-fetched and reran: the
+  aggregate cross-check got *stronger*, not weaker (Spearman rho 0.473 -> **0.549**,
+  p 0.00018 -> **0.00001**; Mann-Whitney p 0.000103 -> **0.000071**), and the
+  disagreement count dropped from 6 to **4**. Most notably, the single most dramatic
+  disagreement reported above -- 1996-04-26/05-03, "0.2% of normal vs. 240% at the
+  gauges" -- turns out to have been entirely an artifact of this bug and is no longer
+  a disagreement at all once the data is corrected; 1992-04-26/05-01 and
+  1994-04-14/22 likewise drop out. The two genuine "ERA5-wet" overestimates
+  (1991-02-21/27, 2016-04-03/08) are unchanged, within noise (41/44 and 27/35
+  stations still agree it was dry). 2000-05-22/30 remains the cleanest
+  reverse-relabeling candidate, unchanged (15/27 stations and the station median
+  both wet). One new disagreement appears, 2023-04-27/05-01 -- patchy rather than a
+  clean relabeling candidate (9 of 36 stations wet, led by one extreme outlier at
+  1218% of normal, but the median station (15%) stays dry). Net effect on the dry/wet
+  split is unchanged (still 46/12 of 58 under the same three clear-cut relabeling
+  candidates), so the already-null T700/Z500 match-rate result is unaffected. See
+  the notebook's own Section 5c conclusions for the full, corrected breakdown.
 - **`CA_snowmelt_methodC_5daymean_std.ipynb`** -- snow-side analog of the atmospheric
   Method C notebook, same 5-day-mean-std event definition applied to the network
   decline fraction, as a robustness check. **Numbers revised (2026-10-31):** its
