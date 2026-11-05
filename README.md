@@ -710,7 +710,21 @@ Section 8's own numbers.
   box-based diagnostic tried elsewhere (likely reflects rising atmospheric moisture-holding
   capacity through the season in this specific source-region box, a different variable from
   AR/storm *frequency* at the CA coast, which this notebook does not test or rely on a
-  citation for). Onset-window IVT magnitude has no relationship to resulting ridge/warm-episode
+  citation for).
+  **A second, independent box-choice check (not part of the 7-variant sweep): the
+  full upstream domain mean (15-65N, 140-250E, nearly the whole fetched Pacific-North
+  America sector) does *not* show the same rise** -- it's highest in Jan (163.9
+  kg/m/s), lowest in Mar (148.3), ticking back up in Apr (155.1), roughly the opposite
+  shape from the NW-Pacific box. This isn't a contradiction, and it isn't evidence for
+  the sweet-spot hypothesis either -- a domain this large blends sub-regions (most
+  importantly the deep subtropics, 15-40N) with their own, different seasonal moisture
+  regimes, so it isn't measuring the AR source region this hypothesis is actually
+  about. Its real value is as an independent check against over-claiming: if the
+  NW-Pacific-box rise were a generic Pacific-wide artifact of box placement, it should
+  show up in the full-domain mean too. It doesn't -- which is a second piece of
+  evidence (distinct from the 7-variant edge-sensitivity sweep) that the finding is a
+  genuine feature of this specific source region, not a box-choice coincidence.
+  Onset-window IVT magnitude has no relationship to resulting ridge/warm-episode
   peak intensity at any point in the season -- pooled (rho=-0.00/-0.04, p>0.7), via a linear
   IVT x month interaction (p=0.335/0.423), or in a direct three-bin "sweet spot" shape check
   (no hump, inconsistent sign, nothing significant) -- also box-sensitivity-robust. March
