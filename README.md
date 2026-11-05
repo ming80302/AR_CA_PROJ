@@ -229,8 +229,23 @@ Section 8's own numbers.
   region a developing ridge might already occupy, match this notebook's own
   established midlatitude jet band, keep the south edge out of the IVT plume's typical
   latitude) was the first to get full-episode and onset-window means to agree, but
-  still didn't cleanly contain three of the four episodes' waves -- a reassuring data
-  point, not a validated box. The fixed-box approach is now retracted as untrustworthy
+  still didn't cleanly contain three of the four episodes' waves (their min/max sit on
+  the box's own walls, not safely inside it) -- a reassuring data point, not a
+  validated box.
+  **General lesson, not specific to any one box choice:** none of the three attempted
+  boxes (original, counter-example, three-design-principles) was itself more
+  "correct" than the others -- each was chosen by eye or by one defensible-sounding
+  principle, not derived independently of the data, and each failed for the same
+  underlying reason. A fixed longitude window cannot work for this comparison because
+  the quantity that actually matters -- where each episode's ridge builds -- is
+  exactly the thing that varies hugely across episodes (199-241E, a 40+-degree
+  spread): any single edge is an arbitrary cut through that range, and whichever side
+  of the cut a given episode happens to fall on can flip a box-mean ranking that looks
+  stable under small nudges of the *same* box. This is a structural limitation of the
+  box-mean method for this specific comparison, not a failure to find the right box --
+  which is why the project moved to a box-free diagnostic instead of continuing to
+  iterate on box shape.
+  The fixed-box approach is now retracted as untrustworthy
   for this comparison. In its place, a box-free phase-following diagnostic (each
   episode's actual 45-55N-band trough and downstream-ridge longitude, tracked
   directly, no box) was stress-tested across 5 latitude bands (35-50N to 50-60N) and 5
