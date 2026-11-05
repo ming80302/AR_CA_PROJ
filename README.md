@@ -210,7 +210,11 @@ Section 8's own numbers.
   readings turned out to be domain-mean artifacts rather than real findings -- a
   Section 7 follow-up (now correctly positioned after the original conclusion it
   follows up on, fixing an ordering bug a fresh-eyes review caught) splits the jet by
-  latitude band, checks a NW Pacific box for Davis's reported upstream omega block, and
+  latitude band (**unweighted at first -- the same missing-`cos(latitude)` bug as the
+  Section 6 domain means, fixed 2026-11-05; re-run moved Late Jan/Feb's subtropical-jet
+  mean from 43.0 to 42.5 m/s and left March's ~27.2 m/s unchanged, so the "does not
+  reproduce Davis's point" conclusion stands**), checks a NW Pacific box for Davis's
+  reported upstream omega block, and
   recomposites IVT over just the 5-day onset window instead of the full episode mean. A
   second fresh-eyes review then caught that the NW Pacific box (140-180E) was clipped
   at the dateline, cutting off the ridge crest half of the omega pattern visible in the
