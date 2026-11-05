@@ -259,22 +259,36 @@ Section 8's own numbers.
   claim a Takaya-and-Nakamura (2001) wave-activity-flux diagnostic is built to test
   directly. Computes the horizontal WAF at 300 hPa from the already-fetched
   `upstream_pacific_2026.nc` (no new fetch) for all four WY2026 episodes. **Status:
-  finished, null -- and the opposite of what the hypothesis predicts.** The record
-  March episode's CA-box-mean convergence (+1.4e-5 m/s^2, 53% of days convergent) is
-  weaker and less sustained than the non-record, 8-day Late Jan/Feb episode (+4.1e-5,
-  62% of days convergent) -- nearly 3x stronger convergence in an episode less than
-  half as long. Over the wider NW-Pacific-to-CA wave path, all four episodes show net
-  *divergence* on average, with no March-specific signature either way. A fourth
-  consistent null result (joining intensity, onset timing, and local spatial
-  structure), and a direct failure of one of Davis's two proposed mechanisms --
-  consistent with Davis's own admission that "the link between simultaneous blocking
-  events is unclear." Real caveats stated in the notebook: still n=1 (one season, not
-  the full-record test that actually worked for local predictors), the basic state is
-  2026's own seasonal mean rather than a multi-year climatology (no other year's
-  upstream data exists), and the raw WAF vector field has a handful of extreme
-  outlier pixels near the weak-wind mask boundary (a known numerical sensitivity of
-  the Takaya-Nakamura formula, not a sign the area-averaged convergence numbers the
-  conclusion rests on are wrong).
+  finished, null -- self-corrected twice (a formula bug, then a box-placement
+  overclaim).** **[Fixed 2026-11-04]** The WAF formula was missing the `cos(lat)`
+  factor in the Takaya-Nakamura Eq. 38 prefactor, over-weighting high-latitude NW
+  Pacific contributions relative to the CA box; re-run post-fix, March's CA-box-mean
+  convergence is +1.0e-5 m/s^2 (53% of days convergent), still weaker than the
+  non-record, 8-day Late Jan/Feb episode's +3.3e-5 (62% of days convergent). **A
+  second fresh-eyes review then found that specific "Late Jan/Feb beats March by
+  >3x" comparison doesn't survive box perturbation** -- a 12-variant, 5-degree sweep
+  of the CA box's edges (this project's fixed study region, not an arbitrary choice,
+  but WAF convergence is noisy enough at this scale that its box-mean isn't a stable
+  estimator) puts March's rank anywhere from 2nd-weakest to outright strongest of the
+  four, overtaking Late Jan/Feb in 5 of 12 variants. Retracted as a headline finding;
+  the honest reading is "no stable ranking emerges," not "Late Jan/Feb demonstrably
+  beats March" -- the same box-placement knife-edge found in
+  `CA_2026_upstream_mechanism_composite.ipynb` Section 7 and
+  `CA_2026_dynamic_tropopause_diagnosis.ipynb` Section 5. Over the wider
+  NW-Pacific-to-CA wave path (not box-swept), all four episodes show net
+  *divergence* on average, with no March-specific signature either way. Still a
+  fourth non-explanatory result for March specifically (joining intensity, onset
+  timing, and local spatial structure) and a failure to find support for one of
+  Davis's two proposed mechanisms -- but now because the box-mean diagnostic can't
+  discriminate in either direction, not because it cleanly shows the opposite of
+  Davis's claim -- consistent with Davis's own admission that "the link between
+  simultaneous blocking events is unclear." Real caveats stated in the notebook:
+  still n=1 (one season, not the full-record test that actually worked for local
+  predictors), the basic state is 2026's own seasonal mean rather than a multi-year
+  climatology (no other year's upstream data exists), and the raw WAF vector field
+  has a handful of extreme outlier pixels near the weak-wind mask boundary (a known
+  numerical sensitivity of the Takaya-Nakamura formula, and plausibly part of why the
+  box-mean turned out this sensitive to exact placement).
 - **`CA_ridging_persistence_drivers_upstream.ipynb`** -- *motivation:* every upstream
   diagnostic above was an n=4 case study (one season); `CA_ridging_persistence_drivers.ipynb`
   found real statistical power only comes from the full 47-48-event record, but tested
@@ -310,35 +324,51 @@ Section 8's own numbers.
   47-48-event record. Weak-wind mask tightened (2 to 3 m/s) plus a new outlier backstop
   per the n=4 notebook's own flagged caveat -- confirmed to exclude only ~4.5 extra grid
   points/day, a handful-scale correction. **Status: finished, sixth (and, extended
-  below, seventh) null/non-explanatory result.** Z500 duration shows no relationship to
-  any of the three WAF predictors
-  (p=0.46-0.75). T700 shows a weak, nominally significant but Bonferroni-uncorrected
-  relationship (path-mean convergence rho=-0.31 p=0.032, fraction convergent rho=-0.32
-  p=0.027) -- and it's reversed from Davis's "reinforced by impinging eddies" framing:
-  more convergence predicts *shorter* persistence. March 2026 itself sits at the
-  81st-94th percentile on all three measures (above-average, not a weak outlier) but
-  since Z500 duration doesn't relate to these measures at all, that doesn't explain its
-  record duration either -- the non-record 8-day Late Jan/Feb episode outranks March on
-  two of three measures, consistent with (not contradicting) a genuine null
-  relationship. Flags a possible, untested connection to the jet/trough finding above
-  (a troughier precursor could be a wave-energy source rather than a local convergence
-  zone) as a loose end for future work, not a resolved synthesis.
-  **Extended (2026-11-02): repeated reinforcement vs. a single decaying trigger.**
-  Section 4/5 only tested time-*averaged* convergence; a new Section 7 asks whether a
-  long episode is long because it gets re-forced partway through (several discrete
-  pulses) rather than triggered once and decaying, using the same daily series already
-  computed (no new data). Predictors are rate/fraction-based specifically to avoid the
-  tautology that a longer event mechanically fits more raw pulse counts. Also null for
-  Z500 (p=0.23, p=0.94) and only marginal-and-reversed for T700 (pulse rate rho=-0.29
-  p=0.052, second-half-convergent fraction rho=-0.29 p=0.051 -- *more* frequent/
-  sustained pulses go with *shorter* T700 persistence, not longer) -- weaker than the
-  time-mean result, same direction, not an independent confirmation. March's 19-day
-  sequence shows 5 distinct pulses (more than any WY2026 sibling in raw count) but its
-  rate-normalized pulse rate (69th percentile) and second-half-convergent fraction
-  (63rd percentile, *lower* than the short Late Jan/Feb episode's 85th) are both
-  unremarkable -- the "recharging" hypothesis is now also closed out as a seventh
-  null/non-explanatory result, cheap to test and worth ruling out rather than leaving
-  open.
+  below, seventh) null/non-explanatory result -- re-run 2026-11-04 after the same
+  `cos(lat)` formula bug as the n=4 sibling, with a box-sensitivity caveat added on
+  top.** **[Fixed 2026-11-04]** Post-fix, Z500 duration shows no relationship to any
+  of the three WAF predictors at the baseline CA box (rho=0.14 p=0.34, rho=0.07
+  p=0.66, rho=0.04 p=0.79). T700's pre-fix "nominally significant" result (path-mean
+  rho=-0.31 p=0.032, fraction convergent rho=-0.32 p=0.027) does **not** survive the
+  fix -- both drop to rho=-0.24 (p=0.11, p=0.11), no longer even nominally
+  significant; the original "reversed from Davis but doesn't survive Bonferroni"
+  framing undersold how fragile that reversal was. **A box-sensitivity check (new
+  Section 5b) then found the opposite failure mode matters here: the T700 null is
+  itself not robust.** A 5-degree sweep of the CA box's edges (6 variants) leaves
+  Z500 null everywhere, but shifting the box 5 degrees east (240-251E) turns the
+  baseline T700 null (rho=-0.12, p=0.41) into rho=-0.32 (p=0.031) and the
+  fraction-convergent predictor into rho=-0.32 (p=0.027) -- both newly, nominally
+  significant, same direction as before. Every other 5-degree variant stays null, so
+  this isn't "the box is always wrong," but it is enough to retract "fully null, in
+  either direction" -- the honest statement is that T700/WAF-convergence sits right
+  at the edge of detectability, and a fixed-box statistic can land on either side of
+  that edge depending on exactly where the box sits. March 2026 itself sits at the
+  79th-83rd percentile on all three measures post-fix (above-average, not a weak
+  outlier) but since Z500 duration doesn't relate to these measures at all, that
+  doesn't explain its record duration either -- the non-record 8-day Late Jan/Feb
+  episode outranks March on two of three measures. Flags a possible, untested
+  connection to the jet/trough finding above (a troughier precursor could be a
+  wave-energy source rather than a local convergence zone), and now also flags the
+  T700/box-mean relationship as a real, open possibility worth a proper multi-box or
+  box-free re-analysis, not a settled null, if this mechanism is ever revisited.
+  **Extended (2026-11-02, re-run 2026-11-04 post-fix): repeated reinforcement vs. a
+  single decaying trigger.** Section 4/5 only tested time-*averaged* convergence; a
+  new Section 7 asks whether a long episode is long because it gets re-forced
+  partway through (several discrete pulses) rather than triggered once and decaying,
+  using the same daily series already computed (no new data). Predictors are
+  rate/fraction-based specifically to avoid the tautology that a longer event
+  mechanically fits more raw pulse counts. Post-fix, also null for Z500 (rho=-0.08
+  p=0.60, rho=0.06 p=0.67) and now null (not just marginal) for T700 too (pulse rate
+  rho=-0.21 p=0.16, second-half-convergent fraction rho=-0.23 p=0.12, vs. the pre-fix
+  rho=-0.29, p=0.052/0.051 that sat right at the conventional threshold) -- the one
+  place this notebook's original pass found any predictor near significance turns
+  out to have been the missing `cos(lat)` term, not a real near-miss (not
+  separately re-tested for box sensitivity). March's 19-day sequence shows 5
+  distinct pulses (more than any WY2026 sibling in raw count) but its
+  rate-normalized pulse rate (71st percentile post-fix) and second-half-convergent
+  fraction (65th percentile, *lower* than the short Late Jan/Feb episode's 83rd) are
+  both unremarkable -- the "recharging" hypothesis remains closed out as a seventh
+  null/non-explanatory result, now on cleaner (not just unfixed) numbers.
 - **`CA_ridging_persistence_background_state.ipynb`** -- *motivation:* every notebook
   above tests an instantaneous precursor or contemporaneous field; none test
   *background* conditions -- the slower large-scale state an episode happens to occur
@@ -450,15 +480,33 @@ Section 8's own numbers.
   robust for T700 across k=4-7 (nominally significant at k=4, k=5, k=7) but breaking
   down at k=8; |phase speed| stays weak and sign-inconsistent across wavenumbers --
   not a robust finding at any k. The jet double-core (waveguide) ratio -- the one
-  measure this bug didn't touch, since it never used the harmonic fit -- is unchanged:
-  nominally significant for Z500 but **backwards** (rho=-0.34, p=0.020, more
-  double-jet structure predicts *shorter* persistence), and March's own record-highest
-  double-jet ratio (100th percentile) is still a second-order anomaly against that
-  metric's own relationship. None of six headline tests clears a Bonferroni bar.
-  **Net: no longer "joins the list of mechanisms that don't explain March" -- this is
-  now the most QRA-consistent evidence anywhere in the mechanism thread, short of a
-  confirmed explanation.** A genuine global-wavenumber test remains the clearest way
-  to settle the regional-proxy question definitively.
+  measure this bug didn't touch, since it never used the harmonic fit -- is unchanged
+  in its own numbers: nominally significant for Z500 but **backwards** (rho=-0.34,
+  p=0.020, more double-jet structure predicts *shorter* persistence), and March's own
+  record-highest double-jet ratio (100th percentile) read as a second-order anomaly
+  against that metric's own relationship. **[Box/window-sensitivity note, added
+  2026-11-04] That reading needs a correction: the rho=-0.34, p=0.020 relationship
+  is itself a window-placement knife-edge, the same failure mode found in
+  `CA_2026_upstream_mechanism_composite.ipynb` Section 7,
+  `CA_2026_dynamic_tropopause_diagnosis.ipynb` Section 5, and both WAF notebooks
+  above.** A new Section 5b reruns the jet-ratio diagnostic at 5 alternative
+  longitude windows spanning the available 140-250E domain (the baseline
+  `JET_LON=150-246E` was set by convention, not derived from the data): p rises to
+  0.054-0.088 in every one of them, never again clearing the conventional 0.05 bar
+  outside the one specific window this notebook happens to use. March's own extreme
+  double-jet signature is a separate, robust fact -- it stays at the 94th-100th
+  percentile in 4 of 5 alternative windows, only dropping to 71st under the most
+  aggressively shifted window -- but the record-wide "double-jet predicts *shorter*
+  persistence" relationship it was being read against is not a settled finding, just
+  a single borderline data point. None of six headline amplitude/phase-speed tests
+  clears a Bonferroni bar, and the jet-ratio test no longer counts as a confirmed
+  counter-argument either -- both the original support and the original
+  counter-evidence for this mechanism turned out to rest on fragile numerics.
+  **Net: no longer "joins the list of mechanisms that don't explain March," but also
+  no longer "the jet-waveguide evidence argues against it" -- this is now the most
+  QRA-consistent evidence anywhere in the mechanism thread, short of a confirmed
+  explanation.** A genuine global-wavenumber test remains the clearest way to settle
+  the regional-proxy question definitively.
 - **`CA_ridging_persistence_gap_trough_depth.ipynb`** -- *motivation:* a specific
   refinement of a proposed hypothesis ("repeated ridge development plus insufficient
   intervening trough passage matters more than individual-ridge intensity") whose
