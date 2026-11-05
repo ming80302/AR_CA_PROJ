@@ -741,6 +741,28 @@ Section 8's own numbers.
   but a single data point, not a tested relationship, and flagged as exactly that rather than
   oversold.
 
+**Bottom line on the AR-ridging "sweet spot" hypothesis (both notebooks above).** Rejected, and
+with more confidence than most null results in this thread. The hypothesis made a specific,
+falsifiable claim -- ARs strong-but-unusable early in the season, weak-and-ineffective late,
+March uniquely in between -- and failed on every angle tested: the seasonal-decline premise is
+reversed, not merely absent (IVT rises monotonically Jan-Apr, and this is the one upstream
+box-mean result in the entire mechanism thread that is genuinely box-robust, not a knife-edge,
+unlike the single-episode spatial diagnostics discussed elsewhere in this README); the
+sweet-spot shape itself is absent (no hump, inconsistent sign, box-robust null); the
+pathway/timing reframing is also null, with the Feb-Mar bin the *weakest* of three month bins
+rather than the strongest; and March 2026 itself isn't even the standout case on the one measure
+this hypothesis cared about (less anomalous-for-its-calendar-date than January's episode,
+despite January being the shortest, weakest episode of the four). What survives, narrowly: a
+precursor moisture *pathway* shape (not magnitude) that was unusually consistent across
+WY2026's four episodes (`CA_ridging_persistence_central_pacific_template.ipynb`, 91st percentile
+vs. a historical null) and a single n=1 observation that March's own moisture-to-ridge lag was
+synchronous versus 3-9 days for its WY2026 siblings -- neither is evidence for the sweet-spot
+hypothesis as stated, and both are flagged in their source notebooks as exactly what they are (a
+pattern-level curiosity and one data point) rather than oversold. If this mechanism thread is
+revisited, `CA_ridging_persistence_gap_trough_depth.ipynb`'s shallow-pre-March-trough finding and
+the QRA wave-amplitude result (see above) remain the stronger open leads for explaining March's
+record persistence specifically -- not AR-ridging strength.
+
 ## Method A vs. Method C: cross-cutting comparison
 
 Both the atmospheric and snow sides define a headline "Method A" (explicit threshold +
