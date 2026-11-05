@@ -187,6 +187,27 @@ This README is an orientation map, not a substitute for it.
   Zero new fetch -- `t2m_sierra_<year>.nc` only covers Jan-Apr, so this doesn't reach the
   17 May-onset events in the full 58-event melt record (likely the gradient's tail end).
 
+**Bottom line on the declining melt-triggering-threshold hypothesis (both notebooks above).**
+Supported, and sharpened in the process. The specific claim -- January near-impossible, April
+needing only a brief warm pulse, March in between and needing synoptic-scale persistence to
+bridge the gap -- holds up across three independent tests: the synoptic heat-wave match rate
+itself drops sharply in April (88% Feb-Mar -> 38%, p=0.0014), and not because April's unmatched
+events are smaller (magnitude distributions are indistinguishable from matched ones); swapping
+to a local Sierra-box T2M definition shows the effect was never about *which* variable, only
+*how long* the warm anomaly has to last (the April gap nearly vanishes at a loose 2-day
+persistence threshold and reopens to as much as 38 points at 5 days, the same persistence
+Z500/T700 require); and the 2026-11-04 extension shows this is a continuous gradient across
+Feb-Apr (rho=-0.35, p=0.0257), not a step at the April calendar boundary, consistent with
+snowpack cold content depleting continuously through the season rather than switching off at
+one date. One real gap in the evidence: **January itself is untested, not just hard** -- zero
+Jan-onset events exist in the 41-event Jan-Apr melt sample, so "practically impossible in
+January" is an extrapolation of the declining-persistence trend backward through an empty bin,
+not a direct observation -- and the relationship is threshold-dependent (clear at the 90th
+percentile, weaker and not significant at the 95th). The mechanism this project's own data
+supports -- Guo and He (2026)'s depleting snowpack cold content, a cumulative energy-balance
+quantity -- is a related but distinct claim from the original hypothesis's specific appeal to
+declining solar radiation, which was never the thing directly measured here.
+
 ## Mechanism: why do some ridging episodes persist longer than others?
 
 Everything above treats heat-wave *detection* and event-level *matching* -- this new
